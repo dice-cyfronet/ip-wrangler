@@ -2,7 +2,7 @@
 
 $config = Hash.new
 
-$config[:log_file] = 'logs/ipt_wr.log'
-$config[:username] = '<SET_USER_HERE>'
-$config[:password] = '<SET_PASSWORD_HERE>'
-$config[:nat_ip] = '<SET_IP_HERE>'
+$config[:log_file] = 'log/ipt_wr.log'
+$config[:username] = 'iptwr'
+$config[:password] = 'zaq12wsx'
+$config[:nat_ip] = '149.156.238.100'
