@@ -2,9 +2,11 @@ require 'sinatra'
 require 'json'
 require 'logger'
 require 'sqlite3'
-require File.dirname(__FILE__) + '/config.rb'
+require 'yaml'
 
 set :sim, true
+
+$config = YAML.load_file('config.yml')
 
 $l = Logger.new($config[:log_file])
 $l.level = Logger::DEBUG
@@ -14,7 +16,7 @@ use Rack::Auth::Basic, 'Restricted Area' do |username, password|
 end
 
 begin
-   $db = SQLite3::Database.new('ipt_wr.db')
+   $db = SQLite3::Database.new($config[:db])
 rescue Exception => e
    $l.critical "Exception while accessing DB: #{e}:#{e.backtrace}"
    exit(1)
@@ -85,7 +87,7 @@ end
 
 tcp_p.each do |tp|
 	  
-pub_port = get_pub_port("tcp")
+pub_port = get_pub_port('tcp')
 $l.debug "IP: #{ip}, PubPort: #{pub_port}, PrivPort: #{tp}, Proto: tcp"
 
 unless settings.sim
@@ -98,7 +100,7 @@ end
 
 $db.execute("INSERT INTO NatRules (pubIp, privIp, pubPort, privPort, proto) values ('#{$config[:nat_ip]}', '#{ip}', #{pub_port}, #{tp}, 'tcp')")
 
-redirect_h = Hash.new()
+redirect_h = Hash.new
 redirect_h['pubIp'] = $config[:nat_ip]
 redirect_h['privIp'] = ip
 redirect_h['pubPort'] = pub_port
@@ -123,12 +125,12 @@ end
 $l.debug "IP: #{ip}, SrcPort: #{pub_port}, DstPort: #{up}, Proto: udp"
 $db.execute("INSERT INTO NatRules (pubIp, privIp, pubPort, privPort, proto) values ('#{$config[:nat_ip]}', '#{ip}', #{pub_port}, #{up}, 'udp')")
 
-redirect_h = Hash.new()
+redirect_h = Hash.new
 redirect_h['pubIp'] = $config[:nat_ip]
 redirect_h['privIp'] = ip
 redirect_h['pubPort'] = pub_port
 redirect_h['privPort'] = up
-redirect_h['proto'] = "udp"
+redirect_h['proto'] = 'udp'
 redirect_a.push(redirect_h)
 
 end
@@ -162,10 +164,10 @@ get '/dnat/*' do |ip|
   content_type 'application/json'
   redirect_l = $db.execute('SELECT pubIp, pubPort, privPort, proto FROM NatRules WHERE privIp = :ipaddr', ':ipaddr' => "#{ip}")
   
-  ip_a = Array.new()
+  ip_a = Array.new
 
   redirect_l.each do |r|
-    ip_h = Hash.new()
+    ip_h = Hash.new
     ip_h['pubIp'] = r[0]
     ip_h['privIp'] = ip
     ip_h['pubPort'] = r[1].to_i
@@ -189,8 +191,8 @@ post '/dnat/*' do |ip|
 
   raise 'Illegal input JSON format' unless data.kind_of?(Array)
 
-  redirect_tcp = Array.new()
-  redirect_udp = Array.new()
+  redirect_tcp = Array.new
+  redirect_udp = Array.new
 	
   data.each do |dpp|
     raise 'Illegal input JSON format' unless dpp.kind_of?(Hash)
