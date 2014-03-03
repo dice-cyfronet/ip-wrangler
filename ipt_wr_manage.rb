@@ -71,6 +71,10 @@ def p_decode(proto, ps)
   IPTWr::PortRange.new proto, p[0], p[1]
 end
 
+def add
+
+end
+
 begin
 opts.each do |opt, arg|
   case opt
@@ -117,6 +121,8 @@ cmd = ARGV.shift
 case cmd
   when 'initdb'
     init_database
+  when 'add'
+
   else
     puts 'Unknown command'
     usage
