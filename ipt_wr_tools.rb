@@ -1,4 +1,5 @@
 require 'sqlite3'
+require 'json'
 
 module IptWr
 
@@ -20,9 +21,16 @@ module IptWr
                  np.protocol.to_s)
     end
 
-    def load_nat_ports
-      nps = NatPorts.new
-      nprs = @db.execute('SELECT pubIp, pubPort, privIp, privPort, proto FROM NatPorts')
+    def load_nat_ports(used_only = false)
+
+      nps = Array.new
+
+      if used_only
+        nprs = @db.execute('SELECT pubIp, pubPort, privIp, privPort, proto FROM NatPorts WHERE privIp IS NOT NULL')
+      else
+        nprs = @db.execute('SELECT pubIp, pubPort, privIp, privPort, proto FROM NatPorts')
+      end
+
       nprs.each do |npr|
         case npr[4]
           when 'tcp'
@@ -33,9 +41,38 @@ module IptWr
             raise 'Unknown protocol'
         end
         np = NatPort.new npr[2],npr[0],npr[3],npr[1],proto
-        nps.add_nat_port np
+        nps.push np
       end
       nps
+    end
+
+    def lock
+      got_lock = false
+
+      10.times do
+        begin
+          @db.execute('BEGIN EXCLUSIVE TRANSACTION')
+          got_lock = true
+          break
+        rescue SQLite3::BusyException
+          sleep 0.2
+        rescue Exception => e
+          raise e
+        end
+      end
+
+      unless got_lock
+        raise 'DB Lock Timeout'
+      end
+    end
+
+    def next_free(priv_ip,priv_port,proto)
+      lock
+      npr = @db.get_first_row('SELECT pubIp, pubPort, privIp, privPort, proto FROM NatPorts WHERE proto = ? AND privIp IS NULL LIMIT 1', proto.to_s)
+      raise 'No free ports' if npr.nil?
+      pub_ip = npr[0]
+      pub_port = npr[1]
+
     end
 
   end
@@ -118,23 +155,6 @@ module IptWr
     end
   end
 
-  #class PortRange
-  #  attr_accessor :proto, :b, :e
-
-  #  def each
-  #    b_port = @b.port
-  #    e_port = @e.port
-  #    b_port.step(e_port, 1) { |p| yield p }
-  #  end
-
-  #  def initialize(proto, b, e)
-  #    raise 'Ports order mismatch' if b > e
-  #    @proto = Protocol.new proto
-  #    @b = Port.new b
-  #    @e = Port.new e
-  #  end
-  # end
-
   class NatPort
     attr_accessor :priv_ip, :pub_ip, :priv_port, :pub_port, :protocol
 
@@ -149,6 +169,16 @@ module IptWr
     def db_save(db)
       db.save_nat_port self
     end
+
+    def to_hash
+      h = Hash.new
+      h['pubIp'] = @pub_ip.to_s
+      h['privIp'] = @priv_ip.to_s
+      h['pubPort'] = @pub_port.port
+      h['privPort'] = @priv_port.port
+      h['proto'] = @protocol.to_s
+      h
+    end
   end
 
   class NatPorts
@@ -157,8 +187,8 @@ module IptWr
       @nat_ports = Array.new
     end
 
-    def db_load(db)
-
+    def db_load(db, used_only = false)
+      @nat_ports = db.load_nat_ports used_only
     end
 
     def add_range(ip, proto, p1, p2)
@@ -177,6 +207,14 @@ module IptWr
       @nat_ports.each do |p|
         p.db_save db
       end
+    end
+
+    def list
+      la = Array.new
+      @nat_ports.each do |p|
+        la.push p.to_hash
+      end
+      la.to_json
     end
 
   end
