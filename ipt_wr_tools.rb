@@ -46,33 +46,22 @@ module IptWr
       nps
     end
 
-    def lock
-      got_lock = false
-
-      10.times do
-        begin
-          @db.execute('BEGIN EXCLUSIVE TRANSACTION')
-          got_lock = true
-          break
-        rescue SQLite3::BusyException
-          sleep 0.2
-        rescue Exception => e
-          raise e
-        end
-      end
-
-      unless got_lock
-        raise 'DB Lock Timeout'
-      end
-    end
-
     def next_free(priv_ip,priv_port,proto)
-      lock
-      npr = @db.get_first_row('SELECT pubIp, pubPort, privIp, privPort, proto FROM NatPorts WHERE proto = ? AND privIp IS NULL LIMIT 1', proto.to_s)
-      raise 'No free ports' if npr.nil?
-      pub_ip = npr[0]
-      pub_port = npr[1]
-
+      begin
+        @db.transaction
+        npr = @db.get_first_row('SELECT rowid, pubIp, pubPort FROM NatPorts WHERE proto = ? AND privIp IS NULL LIMIT 1', proto.to_s)
+        raise 'No free ports' if npr.nil?
+        rowid = npr[0]
+        pub_ip = npr[1]
+        pub_port = npr[2]
+        @db.execute('UPDATE NatPorts SET privip=?,privPort=? WHERE rowid=?',priv_ip,priv_port,rowid)
+        np = NatPort.new priv_ip, pub_ip, priv_port, pub_port, proto.protocol
+        @db.commit
+        np
+      rescue Exception => e
+        @db.rollback
+        raise e
+      end
     end
 
   end
