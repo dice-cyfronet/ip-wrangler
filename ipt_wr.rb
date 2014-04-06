@@ -86,24 +86,33 @@ unless got_lock
 end
 
 tcp_p.each do |tp|
-	  
-pub_port = get_pub_port('tcp')
-$l.debug "IP: #{ip}, PubPort: #{pub_port}, PrivPort: #{tp}, Proto: tcp"
 
-unless settings.sim
+redir = $db.get_first_row('SELECT pubIp, pubPort FROM NatPorts WHERE proto = \'tcp\' AND privIp = ? AND privPort = ? LIMIT 1',
+                            ip, tp)
+redirect_h = Hash.new
 
-`/usr/bin/sudo /sbin/iptables -t nat -A PREROUTING -d #{$config[:nat_ip]}/32 -p tcp -m tcp --dport #{pub_port} -m comment --comment "IptWr-AUTO" -j DNAT --to-destination #{ip}:#{tp}`
+if redir.nil?
+  pub_port = get_pub_port('tcp')
+  $l.debug "IP: #{ip}, PubPort: #{pub_port}, PrivPort: #{tp}, Proto: tcp"
 
-raise Exception, "Command iptables failed!" unless $?.exitstatus == 0
+  unless settings.sim
 
+  `/usr/bin/sudo /sbin/iptables -t nat -A PREROUTING -d #{$config[:nat_ip]}/32 -p tcp -m tcp --dport #{pub_port} -m comment --comment "IptWr-AUTO" -j DNAT --to-destination #{ip}:#{tp}`
+
+  raise Exception, "Command iptables failed!" unless $?.exitstatus == 0
+
+  end
+
+  $db.execute("INSERT INTO NatRules (pubIp, privIp, pubPort, privPort, proto) values ('#{$config[:nat_ip]}', '#{ip}', #{pub_port}, #{tp}, 'tcp')")
+
+  redirect_h['pubIp'] = $config[:nat_ip]
+  redirect_h['pubPort'] = pub_port
+else
+  redirect_h['pubIp'] = redir[0]
+  redirect_h['pubPort'] = redir[1]
 end
 
-$db.execute("INSERT INTO NatRules (pubIp, privIp, pubPort, privPort, proto) values ('#{$config[:nat_ip]}', '#{ip}', #{pub_port}, #{tp}, 'tcp')")
-
-redirect_h = Hash.new
-redirect_h['pubIp'] = $config[:nat_ip]
 redirect_h['privIp'] = ip
-redirect_h['pubPort'] = pub_port
 redirect_h['privPort'] = tp
 redirect_h['proto'] = 'tcp'
 redirect_a.push(redirect_h)
@@ -111,24 +120,35 @@ redirect_a.push(redirect_h)
 end
 
 udp_p.each do |up|
-	  
-pub_port = get_pub_port('udp')
 
-unless settings.sim
-
-`/usr/bin/sudo /sbin/iptables -t nat -A PREROUTING -d #{$config[:nat_ip]}/32 -p udp -m udp --dport #{pub_port} -m comment --comment "IptWr-AUTO" -j DNAT --to-destination #{ip}:#{up}`
-
-raise Exception, 'Command iptables failed!' unless $?.exitstatus == 0
-
-end
-
-$l.debug "IP: #{ip}, SrcPort: #{pub_port}, DstPort: #{up}, Proto: udp"
-$db.execute("INSERT INTO NatRules (pubIp, privIp, pubPort, privPort, proto) values ('#{$config[:nat_ip]}', '#{ip}', #{pub_port}, #{up}, 'udp')")
+redir = $db.get_first_row('SELECT pubIp, pubPort FROM NatPorts WHERE proto = \'udp\' AND privIp = ? AND privPort = ? LIMIT 1',
+                           ip, up)
 
 redirect_h = Hash.new
-redirect_h['pubIp'] = $config[:nat_ip]
+
+if redir.nil?
+
+  pub_port = get_pub_port('udp')
+
+  unless settings.sim
+
+  `/usr/bin/sudo /sbin/iptables -t nat -A PREROUTING -d #{$config[:nat_ip]}/32 -p udp -m udp --dport #{pub_port} -m comment --comment "IptWr-AUTO" -j DNAT --to-destination #{ip}:#{up}`
+
+  raise Exception, 'Command iptables failed!' unless $?.exitstatus == 0
+
+  end
+
+  $l.debug "IP: #{ip}, SrcPort: #{pub_port}, DstPort: #{up}, Proto: udp"
+  $db.execute("INSERT INTO NatRules (pubIp, privIp, pubPort, privPort, proto) values ('#{$config[:nat_ip]}', '#{ip}', #{pub_port}, #{up}, 'udp')")
+
+  redirect_h['pubIp'] = $config[:nat_ip]
+  redirect_h['pubPort'] = pub_port
+else
+  redirect_h['pubIp'] = redir[0]
+  redirect_h['pubPort'] = redir[1]
+end
+
 redirect_h['privIp'] = ip
-redirect_h['pubPort'] = pub_port
 redirect_h['privPort'] = up
 redirect_h['proto'] = 'udp'
 redirect_a.push(redirect_h)

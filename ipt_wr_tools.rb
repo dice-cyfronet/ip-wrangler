@@ -64,6 +64,19 @@ module IptWr
       end
     end
 
+    def next(priv_ip,priv_port,proto)
+      # Reuse if possible
+      npr = @db.get_first_row('SELECT pubIp, pubPort FROM NatPorts WHERE proto = ? AND privIp = ? AND privPort = ? LIMIT 1',
+                              proto.to_s, priv_ip, priv_port)
+
+      if npr.nil?
+        np = next_free priv_ip, priv_port, proto
+      else
+        np = NatPort.new priv_ip, npr[0], priv_port, npr[1], proto.protocol
+      end
+      np
+    end
+
   end
 
 
