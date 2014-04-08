@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" hash="55443225">
+    <data-source source="LOCAL" name="ipt_wr" uuid="b6037eea-d0e4-4193-9016-07ba296c1165">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/ipt_wr.db</jdbc-url>
+      <libraries />
+    </data-source>
+  </component>
+</project>
+
