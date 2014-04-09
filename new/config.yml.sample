@@ -1,5 +1,2 @@
 :log_file: log/ipt_wr.log
-:db: ipt_wr.db
-:username: <USR>
-:password: <PASS>
-:nat_ip: <IP>
+:db: ipt.db
