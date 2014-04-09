@@ -22,10 +22,10 @@ opts = GetoptLong.new(
     ['--port-max', '-x', GetoptLong::REQUIRED_ARGUMENT]
 )
 
-def add_port_r(p1,p2)
+def add_port_r(p1, p2)
   raise 'Wrong ports order' if p1 > p2
 
-  (p1..p2).to_a.each {|p| add_port_s p}
+  (p1..p2).to_a.each { |p| add_port_s p }
 end
 
 def add_port_s(p)
@@ -41,7 +41,7 @@ def add_port(pr)
     when 1
       add_port_s p_range[0].to_i
     when 2
-      add_port_r p_range[0].to_i,p_range[1].to_i
+      add_port_r p_range[0].to_i, p_range[1].to_i
     else
       raise '[add_ip] Syntax error'
   end
@@ -86,10 +86,10 @@ def add
 end
 
 begin
-opts.each do |opt, arg|
-  case opt
-    when '--help'
-      puts <<-EOF
+  opts.each do |opt, arg|
+    case opt
+      when '--help'
+        puts <<-EOF
 ipt_wr_manage [OPTIONS] <cmd>
 -h, --help:
   Help
@@ -112,51 +112,51 @@ initdb - create database and fill initial data
 list - list all ports
 add - add port / all ports in range
 del - remove port / all ports in range
-      EOF
-    when '--db'
-      $db_name = arg
-    when '--ip'
-      $ip = arg
-    when '--tcp'
-      unless $proto.nil?
-        puts 'Conflict between --tcp and --udp'
-        exit 3
-      end
-      $proto = IptWr::Protocol::PROTO_TCP
-    when '--udp'
-      unless $proto.nil?
-        puts 'Conflict between --tcp and --udp'
-        exit 4
-      end
-      $proto = IptWr::Protocol::PROTO_UDP
-    when '--port'
-      unless $p1.nil?
-        puts 'Conflict: --port, --port-min, --port-max'
-        exit 5
-      end
-      $p1 = arg.to_i
-      unless $p2.nil?
-        puts 'Conflict: --port, --port-min, --port-max'
-        exit 6
-      end
-      $p2 = arg.to_i
-    when '--port-min'
-      unless $p1.nil?
-        puts 'Conflict: --port, --port-min, --port-max'
-        exit 7
-      end
-      $p1 = arg.to_i
-    when '--port-max'
-      unless $p2.nil?
-        puts 'Conflict: --port, --port-min, --port-max'
-        exit 8
-      end
-      $p2 = arg.to_i
-    else
-      # Should not happen but...
-      raise Error.new
+        EOF
+      when '--db'
+        $db_name = arg
+      when '--ip'
+        $ip = arg
+      when '--tcp'
+        unless $proto.nil?
+          puts 'Conflict between --tcp and --udp'
+          exit 3
+        end
+        $proto = IptWr::Protocol::PROTO_TCP
+      when '--udp'
+        unless $proto.nil?
+          puts 'Conflict between --tcp and --udp'
+          exit 4
+        end
+        $proto = IptWr::Protocol::PROTO_UDP
+      when '--port'
+        unless $p1.nil?
+          puts 'Conflict: --port, --port-min, --port-max'
+          exit 5
+        end
+        $p1 = arg.to_i
+        unless $p2.nil?
+          puts 'Conflict: --port, --port-min, --port-max'
+          exit 6
+        end
+        $p2 = arg.to_i
+      when '--port-min'
+        unless $p1.nil?
+          puts 'Conflict: --port, --port-min, --port-max'
+          exit 7
+        end
+        $p1 = arg.to_i
+      when '--port-max'
+        unless $p2.nil?
+          puts 'Conflict: --port, --port-min, --port-max'
+          exit 8
+        end
+        $p2 = arg.to_i
+      else
+        # Should not happen but...
+        raise Error.new
+    end
   end
-end
 rescue GetoptLong::Error
   usage
 end

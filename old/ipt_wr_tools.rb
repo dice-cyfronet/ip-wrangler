@@ -17,8 +17,8 @@ module IptWr
 
     def save_nat_port(np)
       @db.execute('INSERT INTO NatPorts (pubIp, pubPort, privIp, privPort, proto) VALUES (?, ?, ?, ?, ?)',
-                 np.pub_ip.to_s, np.pub_port.to_s, np.priv_ip.to_s, np.priv_port.to_s,
-                 np.protocol.to_s)
+                  np.pub_ip.to_s, np.pub_port.to_s, np.priv_ip.to_s, np.priv_port.to_s,
+                  np.protocol.to_s)
     end
 
     def load_nat_ports(used_only = false)
@@ -40,13 +40,13 @@ module IptWr
           else
             raise 'Unknown protocol'
         end
-        np = NatPort.new npr[2],npr[0],npr[3],npr[1],proto
+        np = NatPort.new npr[2], npr[0], npr[3], npr[1], proto
         nps.push np
       end
       nps
     end
 
-    def next_free(priv_ip,priv_port,proto)
+    def next_free(priv_ip, priv_port, proto)
       begin
         @db.transaction
         npr = @db.get_first_row('SELECT rowid, pubIp, pubPort FROM NatPorts WHERE proto = ? AND privIp IS NULL LIMIT 1', proto.to_s)
@@ -54,7 +54,7 @@ module IptWr
         rowid = npr[0]
         pub_ip = npr[1]
         pub_port = npr[2]
-        @db.execute('UPDATE NatPorts SET privip=?,privPort=? WHERE rowid=?',priv_ip,priv_port,rowid)
+        @db.execute('UPDATE NatPorts SET privip=?,privPort=? WHERE rowid=?', priv_ip, priv_port, rowid)
         np = NatPort.new priv_ip, pub_ip, priv_port, pub_port, proto.protocol
         @db.commit
         np
@@ -65,7 +65,6 @@ module IptWr
     end
 
   end
-
 
   class IPAddress
 
@@ -82,10 +81,10 @@ module IptWr
         @ip_octets = Array.new(4) { 0 }
         i = 0
         ip_octets_s.each do |o|
-         Integer(o) rescue raise 'Illegal IP format (NaN)'
-         @ip_octets[i] = o.to_i
-         raise 'Illegal IP format (out of range)' if @ip_octets[i] < 0 or @ip_octets[i] > 255
-         i = i + 1
+          Integer(o) rescue raise 'Illegal IP format (NaN)'
+          @ip_octets[i] = o.to_i
+          raise 'Illegal IP format (out of range)' if @ip_octets[i] < 0 or @ip_octets[i] > 255
+          i = i + 1
         end
       else
         raise "Wrong format #{ip.class}"
@@ -182,8 +181,8 @@ module IptWr
 
     def add_range(ip, proto, p1, p2)
       raise 'Ports order mismatch' if p1 > p2
-      p1.step(p2,1) do |p|
-        np = NatPort.new nil,ip,nil,p,proto
+      p1.step(p2, 1) do |p|
+        np = NatPort.new nil, ip, nil, p, proto
         @nat_ports.push np
       end
     end
