@@ -47,22 +47,3 @@ class DB
   end
 
 end
-
-def init
-  db = Sequel.connect('sqlite://ipt.db')
-
-  db.create_table :nat_ports do
-    primary_key :id
-    String :public_ip
-    Int :public_port
-    String :private_ip
-    Int :private_port
-    String :protocol
-  end
-
-  db.create_table :nat_ips do
-    primary_key :id
-    String :public_ip
-    String :private_ip
-  end
-end

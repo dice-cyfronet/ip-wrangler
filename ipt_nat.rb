@@ -2,12 +2,12 @@ require './ipt_ip'
 require './ipt_db'
 require './ipt_iptables'
 
-$iptables = '/sbin/iptables'
-
 class NAT
   attr_accessor :nat_ports, :nat_ips, :free_ports, :free_ips
 
-  def initialize(free_ports, free_ips, db_name, logger)
+  def initialize(free_ports, free_ips, db_name, logger, iptables, chain)
+    @chain = chain
+    @iptables = iptables
     @logger = logger
     @db = DB.new(db_name, logger)
 
@@ -39,11 +39,11 @@ class NAT
       @db.insert_nat_ip_port(public_port.to_s_ip, public_port.port,
                              private_port.to_s_ip, private_port.port,
                              private_port.protocol)
-      command = append_nat_ip_port(public_port.to_s_ip, public_port.port,
+      command = append_nat_ip_port(@chain, public_port.to_s_ip, public_port.port,
                                    private_port.to_s_ip, private_port.port,
                                    private_port.protocol)
-      $logger.info "#{command}"
-      `#{$iptables} #{command}`
+      @logger.info "#{command}"
+      `#{@iptables} #{command}`
     end
     nat_port
   end
@@ -61,11 +61,11 @@ class NAT
 
         @db.delete_nat_ip_port(str_ip(nat_port.private_ip), nat_port.private_port,
                                nat_port.protocol)
-        command = delete_nat_ip_port(str_ip(nat_port.public_ip), nat_port.public_port,
+        command = delete_nat_ip_port(@chain, str_ip(nat_port.public_ip), nat_port.public_port,
                                      str_ip(nat_port.private_ip), nat_port.private_port,
                                      nat_port.protocol)
-        $logger.info "#{command}"
-        `#{$iptables} #{command}`
+        @logger.info "#{command}"
+        `#{@iptables} #{command}`
       end
     end
 
@@ -87,10 +87,10 @@ class NAT
       @nat_ips.push(nat_ip)
 
       @db.insert_nat_ip(public_ip.to_s_ip, private_ip.to_s_ip)
-      command = append_nat_ip(public_ip.to_s_ip, private_ip.to_s_ip)
+      command = append_nat_ip(@chain, public_ip.to_s_ip, private_ip.to_s_ip)
 
-      $logger.info "#{command}"
-      `#{$iptables} #{command}`
+      @logger.info "#{command}"
+      `#{@iptables} #{command}`
     end
     nat_ip
   end
@@ -106,10 +106,10 @@ class NAT
         free_ip.push(ip)
 
         @db.delete_nat_ip(str_ip(nat_ip.private_ip), str_ip(nat_ip.public_ip))
-        command = delete_nat_ip(str_ip(nat_ip.private_ip), str_ip(nat_ip.public_ip))
+        command = delete_nat_ip(@chain, str_ip(nat_ip.private_ip), str_ip(nat_ip.public_ip))
 
-        $logger.info "#{command}"
-        `#{$iptables} #{command}`
+        @logger.info "#{command}"
+        `#{@iptables} #{command}`
       end
     end
 

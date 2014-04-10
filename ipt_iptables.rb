@@ -200,33 +200,36 @@ def rule_nat_ip(public_ip, private_ip)
                         Parameter.jump('DNAT'), Parameter.to("#{private_ip}")])
   rule_snat = Rule.new([Parameter.source("#{private_ip}"),
                         Parameter.jump('SNAT'), Parameter.to("#{public_ip}")])
+
   return rule_dnat, rule_snat
 end
 
-def append_nat_ip_port(public_ip, public_port, private_ip, private_port, protocol)
+def append_nat_ip_port(chain, public_ip, public_port, private_ip, private_port, protocol)
   rule = rule_nat_ip_port(public_ip, public_port, private_ip, private_port, protocol)
-  Command.append_rule('PREROUTING', 'nat', rule)
+
+  Command.append_rule(chain, 'nat', rule)
 end
 
-def append_nat_ip(public_ip, private_ip)
+def append_nat_ip(chain, public_ip, private_ip)
   rule_dnat, rule_snat = rule_nat_ip(public_ip, private_ip)
 
-  dnat = Command.append_rule('PREROUTING', 'nat', rule_dnat)
-  snat = Command.append_rule('POSTROUTING', 'nat', rule_snat)
+  dnat = Command.append_rule(chain, 'nat', rule_dnat)
+  snat = Command.append_rule(chain, 'nat', rule_snat)
 
   return dnat, snat
 end
 
-def delete_nat_ip_port(public_ip, public_port, private_ip, private_port, protocol)
+def delete_nat_ip_port(chain, public_ip, public_port, private_ip, private_port, protocol)
   rule = rule_nat_ip_port(public_ip, public_port, private_ip, private_port, protocol)
-  Command.delete_rule_spec('PREROUTING', rule, 'nat')
+
+  Command.delete_rule_spec(chain, rule, 'nat')
 end
 
-def delete_nat_ip(public_ip, private_ip)
+def delete_nat_ip(chain, public_ip, private_ip)
   rule_dnat, rule_snat = rule_nat_ip(public_ip, private_ip)
 
-  dnat = Command.delete_rule_spec('PREROUTING', rule_dnat, 'nat')
-  snat = Command.delete_rule_spec('POSTROUTING', rule_snat, 'nat')
+  dnat = Command.delete_rule_spec(chain, rule_dnat, 'nat')
+  snat = Command.delete_rule_spec(chain, rule_snat, 'nat')
 
   return dnat, snat
 end

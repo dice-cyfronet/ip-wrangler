@@ -38,9 +38,12 @@ db.disconnect
 
 $logger = Logger.new($config[:log_file])
 
+command = Command.append_rule('PREROUTING', 'nat', Rule.new([Parameter.jump($config[:iptables_chain])]))
+`#{$config[:iptables_path]} #{command}`
+
 $nat = NAT.new(range_ports($config[:port_start], $config[:port_stop], parse_ip($config[:port_ip]), 'tcp') +
                    range_ports($config[:port_start], $config[:port_stop], parse_ip($config[:port_ip]), 'udp'),
-               [], $config[:db], $logger)
+               [], $config[:db], $logger, $config[:iptables_path], $config[:iptables_chain])
 
 def sandbox(&block)
   begin
