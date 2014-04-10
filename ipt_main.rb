@@ -15,12 +15,6 @@ end
 
 $config = YAML.load_file('config.yml')
 
-$logger = Logger.new($config[:log_file])
-
-$nat = NAT.new(range_ports($config[:port_start], $config[:port_stop], parse_ip($config[:port_ip]), 'tcp') +
-                   range_ports($config[:port_start], $config[:port_stop], parse_ip($config[:port_ip]), 'udp'),
-               [], $config[:db], $logger)
-
 puts 'Check database'
 
 db = Sequel.connect('sqlite://' + $config[:db])
@@ -41,6 +35,12 @@ db.create_table? :nat_ips do
 end
 
 db.close
+
+$logger = Logger.new($config[:log_file])
+
+$nat = NAT.new(range_ports($config[:port_start], $config[:port_stop], parse_ip($config[:port_ip]), 'tcp') +
+                   range_ports($config[:port_start], $config[:port_stop], parse_ip($config[:port_ip]), 'udp'),
+               [], $config[:db], $logger)
 
 def sandbox(&block)
   begin
