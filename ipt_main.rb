@@ -1,5 +1,6 @@
 require './ipt_nat'
 require './ipt_ip'
+require './ipt_db'
 
 require 'sinatra'
 require 'json'
@@ -11,8 +12,13 @@ $config = YAML.load_file('config.yml')
 
 $logger = Logger.new($config[:log_file])
 
-$nat = NAT.new(range_ports(1024, 1028, [1, 0, 0, 1], 'tcp') + range_ports(1024, 1028, [1, 0, 0, 1], 'udp'),
-               range_ips([1, 0, 0, 2], [1, 0, 0, 4]), $config[:db], $logger)
+$nat = NAT.new(range_ports($config[:port_start], $config[:port_stop], parse_ip($config[:port_ip]), 'tcp') +
+                   range_ports($config[:port_start], $config[:port_stop], parse_ip($config[:port_ip]), 'udp'),
+               [], $config[:db], $logger)
+
+unless File.file?($config[:db])
+  init
+end
 
 def sandbox(&block)
   begin

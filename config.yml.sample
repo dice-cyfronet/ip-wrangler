@@ -1,2 +1,6 @@
 :log_file: log/ipt_wr.log
 :db: ipt.db
+
+:port_ip: 127.0.0.1
+:port_start: 1024
+:port_stop: 2048
