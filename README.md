@@ -1,7 +1,8 @@
 # IP Wrangler
 
-JM FIXME
+In polish __Portostawiaczka__
 
 ## Installation
 
-JM FIXME
+    bundle install
+    run.sh
