@@ -38,6 +38,9 @@ db.disconnect
 
 $logger = Logger.new($config[:log_file])
 
+command = Command.new_chain($config[:iptables_chain], 'nat')
+`#{$config[:iptables_path]} #{command}`
+
 command = Command.append_rule('PREROUTING', 'nat', Rule.new([Parameter.jump($config[:iptables_chain])]))
 `#{$config[:iptables_path]} #{command}`
 
