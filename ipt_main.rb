@@ -21,9 +21,26 @@ $nat = NAT.new(range_ports($config[:port_start], $config[:port_stop], parse_ip($
                    range_ports($config[:port_start], $config[:port_stop], parse_ip($config[:port_ip]), 'udp'),
                [], $config[:db], $logger)
 
-unless File.file?($config[:db])
-  init
+puts 'Check database'
+
+db = Sequel.connect('sqlite://' + $config[:db])
+
+db.create_table? :nat_ports do
+  primary_key :id
+  String :public_ip
+  Int :public_port
+  String :private_ip
+  Int :private_port
+  String :protocol
 end
+
+db.create_table? :nat_ips do
+  primary_key :id
+  String :public_ip
+  String :private_ip
+end
+
+db.close
 
 def sandbox(&block)
   begin
