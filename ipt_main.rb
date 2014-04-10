@@ -8,6 +8,11 @@ require 'json'
 require 'logger'
 require 'yaml'
 
+unless File.file?('config.yml')
+  puts 'No config.yml file found.'
+  exit(1)
+end
+
 $config = YAML.load_file('config.yml')
 
 $logger = Logger.new($config[:log_file])
