@@ -34,7 +34,7 @@ db.create_table? :nat_ips do
   String :private_ip
 end
 
-db.close
+db.disconnect
 
 $logger = Logger.new($config[:log_file])
 
