@@ -69,6 +69,11 @@ puts "Creating chain #{$config[:iptables_chain]} in nat table..."
 command = Command.new_chain($config[:iptables_chain], 'nat')
 `#{$config[:iptables_path]} #{command}`
 
+puts "Flush (if any rule exist) chain #{$config[:iptables_chain]}..."
+
+command = Command.flush_chain($config[:iptables_chain], 'nat')
+`#{$config[:iptables_path]} #{command}`
+
 puts 'Appending rule to PREROUTING chain...'
 
 command = Command.append_rule('PREROUTING', 'nat', Rule.new([Parameter.jump($config[:iptables_chain])]))
