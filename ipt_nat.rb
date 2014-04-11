@@ -13,8 +13,8 @@ class NAT
 
     @nat_ports.each do |nat_port|
       command = append_nat_ip_port(@chain,
-                                   to_s_ip(nat_port.public_ip), nat_port.public_port,
-                                   to_s_ip(nat_port.private_ip), nat_port.private_port,
+                                   str_ip(nat_port.public_ip), nat_port.public_port,
+                                   str_ip(nat_port.private_ip), nat_port.private_port,
                                    nat_port.protocol)
 
       @logger.info "#{command}"
@@ -27,7 +27,7 @@ class NAT
 
     @nat_ips.each do |nat_ip|
       command = append_nat_ip(@chain,
-                              to_s_ip(nat_ip.public_ip), to_s_ip(nat_ip.private_ip))
+                              str_ip(nat_ip.public_ip), str_ip(nat_ip.private_ip))
 
       @logger.info "#{command}"
       `#{@iptables} #{command}`
