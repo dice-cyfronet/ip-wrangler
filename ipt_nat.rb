@@ -12,12 +12,24 @@ class NAT
     @free_ports, @free_ips = free_ports, free_ips
 
     @nat_ports.each do |nat_port|
+      command = append_nat_ip_port(@chain, public_port.to_s_ip, public_port.port,
+                                   private_port.to_s_ip, private_port.port,
+                                   private_port.protocol)
+
+      @logger.info "#{command}"
+      `#{@iptables} #{command}`
+
       @free_ports = @free_ports.reject do |free_port|
         free_port.ip == nat_port.public_ip and free_port.port == nat_port.public_port and free_port.protocol == nat_port.protocol
       end
     end
 
     @nat_ips.each do |nat_ip|
+      command = append_nat_ip(@chain, public_ip.to_s_ip, private_ip.to_s_ip)
+
+      @logger.info "#{command}"
+      `#{@iptables} #{command}`
+
       @free_ips = @free_ips.reject do |free_ip|
         free_ip.ip == nat_ip.public_ip
       end
