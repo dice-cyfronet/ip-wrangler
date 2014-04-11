@@ -7,20 +7,10 @@ require 'bundler'
 
 require 'fileutils'
 
-Bundler.require
+console_logger = File.new('log/ipt_wr_console.log', 'w')
 
-require File.dirname(__FILE__) + '/ipt_main.rb'
-
-set :environment, ENV['RACK_ENV'].to_sym
-set :app_file, 'ipt_main.rb'
-set :raise_errors, true
-
-disable :run
-
-log = File.new('log/ipt_wr_console.log', 'a')
-
-STDOUT.reopen(log)
-STDERR.reopen(log)
+STDOUT.reopen(console_logger)
+STDERR.reopen(console_logger)
 
 puts 'Checking if config.yml is existing...'
 
@@ -31,7 +21,10 @@ end
 
 $config = YAML.load_file('config.yml')
 
-unless "Checking if #{$config[:db]} is existing..."
+puts "Checking if #{$config[:db]} is existing..."
+
+unless File.file?($config[:db])
+  puts "Create #{$config[:db]}"
   FileUtils.touch($config[:db])
 end
 
@@ -39,28 +32,52 @@ puts 'Checking database...'
 
 db = Sequel.connect('sqlite://' + $config[:db])
 
-db.create_table? :nat_ports do
-  primary_key :id
-  String :public_ip
-  Int :public_port
-  String :private_ip
-  Int :private_port
-  String :protocol
+unless db.table_exists? :nat_ports
+  puts 'No nat_ports table. Creating it...'
+
+  db.create_table? :nat_ports do
+    primary_key :id
+    String :public_ip
+    Int :public_port
+    String :private_ip
+    Int :private_port
+    String :protocol
+  end
 end
 
-db.create_table? :nat_ips do
-  primary_key :id
-  String :public_ip
-  String :private_ip
+
+unless db.table_exists? :nat_ips
+  puts 'No nat_ips table. Creating it...'
+
+  db.create_table? :nat_ips do
+    primary_key :id
+    String :public_ip
+    String :private_ip
+  end
 end
 
 db.disconnect
 
+puts "Creating chain #{$config[:iptables_chain]} in nat table..."
+
 command = Command.new_chain($config[:iptables_chain], 'nat')
 `#{$config[:iptables_path]} #{command}`
 
+puts 'Appending rule to PREROUTING chain...'
+
 command = Command.append_rule('PREROUTING', 'nat', Rule.new([Parameter.jump($config[:iptables_chain])]))
 `#{$config[:iptables_path]} #{command}`
+
+Bundler.require
+
+require File.dirname(__FILE__) + '/ipt_main.rb'
+
+set :environment, ENV['RACK_ENV'].to_sym
+set :app_file, 'ipt_main.rb'
+set :raise_errors, true
+
+use Rack::MethodOverride
+disable :run, :reload
 
 run Sinatra::Application
 
@@ -68,8 +85,12 @@ EventMachine.schedule do
   trap('INT') do
     puts 'Killing app...'
 
+    puts 'Deleting rule from PREROUTING chain...'
+
     command = Command.delete_rule_spec('PREROUTING', 'nat', Rule.new([Parameter.jump($config[:iptables_chain])]))
     `#{$config[:iptables_path]} #{command}`
+
+    puts "Deleting chain #{$config[:iptables_chain]} from nat table..."
 
     command = Command.delete_chain($config[:iptables_chain], 'nat')
     `#{$config[:iptables_path]} #{command}`
