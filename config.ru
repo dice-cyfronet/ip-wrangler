@@ -11,7 +11,7 @@ set :raise_errors, true
 
 disable :run
 
-log = File.new('log/ipt_wr_outerr.log', 'a')
+log = File.new('log/ipt_wr_console.log', 'a')
 
 STDOUT.reopen(log)
 STDERR.reopen(log)

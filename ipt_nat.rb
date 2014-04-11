@@ -9,6 +9,7 @@ class NAT
     @chain = chain
     @iptables = iptables
     @logger = logger
+
     @db = DB.new(db_name, logger)
 
     @nat_ports, @nat_ips = @db.load_from_db

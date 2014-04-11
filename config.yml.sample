@@ -1,4 +1,4 @@
-:log_file: log/ipt_wr.log
+:log_file: log/ipt_wr_app.log
 :db: ipt.db
 
 :iptables_chain: IPT_WR

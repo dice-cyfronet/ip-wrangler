@@ -1,4 +1,7 @@
 .idea/
+*.ipr
+*.iws
+*.iml
 *.db
 *.log
 config.yml
