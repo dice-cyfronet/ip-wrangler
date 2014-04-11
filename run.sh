@@ -1,5 +1,27 @@
 #!/bin/bash
 
-export DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cd ${DIR}
-thin -a 192.168.122.94 -p 8400 -R config.ru --tag IptWr start
+export __DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+export __PORT=8400
+export __IP=0.0.0.0
+export __TAG=IptWr
+
+while getopts 'i:p:t:' __FLAG; do
+  case "${__FLAG}" in
+    i)
+        export __PORT=${OPTARG}
+        ;;
+    p)
+        export __IP=${OPTARG}
+        ;;
+    t)
+        export __TAG=${OPTARG}
+        ;;
+    *)
+        error "Unexpected option ${__FLAG}"
+        ;;
+  esac
+done
+
+cd ${__DIR}
+thin -a ${__IP} -p ${__PORT} -R config.ru --tag ${__TAG} start
