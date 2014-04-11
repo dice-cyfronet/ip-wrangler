@@ -8,10 +8,6 @@ require 'json'
 require 'logger'
 require 'yaml'
 
-trap('SIGINT') do
-  puts 'SIGINT'
-end
-
 unless File.file?('config.yml')
   puts 'No config.yml file found.'
   exit(1)

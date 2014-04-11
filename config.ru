@@ -1,3 +1,7 @@
+trap('SIGINT') do
+  puts 'SIGINT'
+end
+
 require 'rubygems'
 require 'bundler'
 
