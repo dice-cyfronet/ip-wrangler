@@ -8,41 +8,9 @@ require 'json'
 require 'logger'
 require 'yaml'
 
-unless File.file?('config.yml')
-  puts 'No config.yml file found.'
-  exit(1)
-end
-
 $config = YAML.load_file('config.yml')
 
-puts 'Check database'
-
-db = Sequel.connect('sqlite://' + $config[:db])
-
-db.create_table? :nat_ports do
-  primary_key :id
-  String :public_ip
-  Int :public_port
-  String :private_ip
-  Int :private_port
-  String :protocol
-end
-
-db.create_table? :nat_ips do
-  primary_key :id
-  String :public_ip
-  String :private_ip
-end
-
-db.disconnect
-
 $logger = Logger.new($config[:log_file])
-
-command = Command.new_chain($config[:iptables_chain], 'nat')
-`#{$config[:iptables_path]} #{command}`
-
-command = Command.append_rule('PREROUTING', 'nat', Rule.new([Parameter.jump($config[:iptables_chain])]))
-`#{$config[:iptables_path]} #{command}`
 
 $nat = NAT.new(range_ports($config[:port_start], $config[:port_stop], parse_ip($config[:port_ip]), 'tcp') +
                    range_ports($config[:port_start], $config[:port_stop], parse_ip($config[:port_ip]), 'udp'),
