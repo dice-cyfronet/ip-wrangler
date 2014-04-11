@@ -96,6 +96,11 @@ EventMachine.schedule do
     command = Command.delete_rule_spec('PREROUTING', Rule.new([Parameter.jump($config[:iptables_chain])]), 'nat')
     `#{$config[:iptables_path]} #{command}`
 
+    puts "Flush chain #{$config[:iptables_chain]}..."
+
+    command = Command.flush_chain($config[:iptables_chain], 'nat')
+    `#{$config[:iptables_path]} #{command}`
+
     puts "Deleting chain #{$config[:iptables_chain]} from nat table..."
 
     command = Command.delete_chain($config[:iptables_chain], 'nat')
