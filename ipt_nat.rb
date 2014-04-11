@@ -1,7 +1,3 @@
-require './ipt_ip'
-require './ipt_db'
-require './ipt_iptables'
-
 class NAT
   attr_accessor :nat_ports, :nat_ips, :free_ports, :free_ips
 

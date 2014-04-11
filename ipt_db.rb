@@ -1,7 +1,3 @@
-require 'sequel'
-
-require './ipt_nat'
-
 class DB
 
   def initialize(db_name, logger)

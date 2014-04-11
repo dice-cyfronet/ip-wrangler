@@ -1,11 +1,18 @@
-require 'thin'
-require 'sinatra'
-require 'eventmachine'
-
-require 'rubygems'
 require 'bundler'
-
+require 'eventmachine'
 require 'fileutils'
+require 'json'
+require 'logger'
+require 'rubygems'
+require 'sequel'
+require 'sinatra'
+require 'thin'
+require 'yaml'
+
+require './ipt_db'
+require './ipt_ip'
+require './ipt_iptables'
+require './ipt_nat'
 
 console_logger = File.new('log/ipt_wr_console.log', 'w')
 
@@ -44,7 +51,6 @@ unless db.table_exists? :nat_ports
     String :protocol
   end
 end
-
 
 unless db.table_exists? :nat_ips
   puts 'No nat_ips table. Creating it...'
