@@ -93,7 +93,7 @@ EventMachine.schedule do
 
     puts 'Deleting rule from PREROUTING chain...'
 
-    command = Command.delete_rule_spec('PREROUTING', 'nat', Rule.new([Parameter.jump($config[:iptables_chain])]))
+    command = Command.delete_rule_spec('PREROUTING', Rule.new([Parameter.jump($config[:iptables_chain])]), 'nat')
     `#{$config[:iptables_path]} #{command}`
 
     puts "Deleting chain #{$config[:iptables_chain]} from nat table..."
