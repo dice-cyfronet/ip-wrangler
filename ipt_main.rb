@@ -1,6 +1,6 @@
 $config = YAML.load_file('config.yml')
 
-$logger = Logger.new($config[:log_file])
+$logger = Logger.new($config[:log_file], nil, false)
 
 $nat = NAT.new(range_ports($config[:port_start], $config[:port_stop], parse_ip($config[:port_ip]), 'tcp') +
                    range_ports($config[:port_start], $config[:port_stop], parse_ip($config[:port_ip]), 'udp'),
