@@ -65,11 +65,15 @@ class Iptables
   end
 
   def exists_nat_port?(public_ip, public_port, protocol, private_ip, private_port)
-    `#{$iptables_bin_path} -t nat -L -n -v #{@chain_name} | #{$awk_bin_path} '{print $9, $10, $11, $12}' | #{$grep_bin_path} -i '^#{public_ip} #{protocol} dpt:#{public_port} to:#{private_ip}:#{private_port}$'`.empty?
+    command = "#{$iptables_bin_path} -t nat -L -n -v #{@chain_name} | #{$awk_bin_path} '{print $9, $10, $11, $12}' | #{$grep_bin_path} -i '^#{public_ip} #{protocol} dpt:#{public_port} to:#{private_ip}:#{private_port}$'"
+    output = `#{command}`.empty?
+    @logger.info "#{command} =>\n\toutput: #{output}\n\texitstatus: #{$?.exitstatus}"
   end
 
   def exists_nat_ip?(public_ip, private_ip)
-    `#{$iptables_bin_path} -t nat -L -n -v #{@chain_name} | #{$awk_bin_path} '{print $9, $10}' | #{$grep_bin_path} -i '^#{public_ip}' to:#{private_ip}`.empty?
+    command = "#{$iptables_bin_path} -t nat -L -n -v #{@chain_name} | #{$awk_bin_path} '{print $9, $10}' | #{$grep_bin_path} -i '^#{public_ip}' to:#{private_ip}"
+    output = `#{command}`.empty?
+    @logger.info "#{command} =>\n\toutput: #{output}\n\texitstatus: #{$?.exitstatus}"
   end
 
   def execute(*commands)
@@ -123,8 +127,8 @@ class Command
     "-t #{table} #{@@commands[:delete_rule]} #{chain} #{num}"
   end
 
-  def self.delete_rule_spec(chain, spec, table)
-    "-t #{table} #{@@commands[:delete_rule]} #{chain} #{spec}"
+  def self.delete_rule_spec(chain, parameters, table)
+    "-t #{table} #{@@commands[:delete_rule]} #{chain} #{parameters_to_s(parameters)}"
   end
 
   def self.new_chain(chain, table)

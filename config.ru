@@ -67,17 +67,20 @@ db.disconnect
 puts "Creating chain #{$config[:iptables_chain_name]} in nat table..."
 
 command = Command.new_chain($config[:iptables_chain_name], 'nat')
-`#{$config[:iptables_bin_path]} #{command}`
+output = `#{$config[:iptables_bin_path]} #{command}`
+puts "#{$config[:iptables_bin_path]} #{command} => #{output}"
 
 puts "Flush (if any rule exist) chain #{$config[:iptables_chain_name]}..."
 
 command = Command.flush_chain($config[:iptables_chain_name], 'nat')
-`#{$config[:iptables_bin_path]} #{command}`
+output = `#{$config[:iptables_bin_path]} #{command}`
+puts "#{$config[:iptables_bin_path]} #{command} => #{output}"
 
 puts 'Appending rule to PREROUTING chain...'
 
 command = Command.append_rule('PREROUTING', 'nat', [Parameter.jump($config[:iptables_chain_name])])
-`#{$config[:iptables_bin_path]} #{command}`
+output = `#{$config[:iptables_bin_path]} #{command}`
+puts "#{$config[:iptables_bin_path]} #{command} => #{output}"
 
 Bundler.require
 
@@ -99,17 +102,20 @@ EventMachine.schedule do
     puts 'Deleting rule from PREROUTING chain...'
 
     command = Command.delete_rule_spec('PREROUTING', [Parameter.jump($config[:iptables_chain_name])], 'nat')
-    `#{$config[:iptables_bin_path]} #{command}`
+    output = `#{$config[:iptables_bin_path]} #{command}`
+    puts "#{$config[:iptables_bin_path]} #{command} => #{output}"
 
     puts "Flush chain #{$config[:iptables_chain_name]}..."
 
     command = Command.flush_chain($config[:iptables_chain_name], 'nat')
-    `#{$config[:iptables_bin_path]} #{command}`
+    output = `#{$config[:iptables_bin_path]} #{command}`
+    puts "#{$config[:iptables_bin_path]} #{command} => #{output}"
 
     puts "Deleting chain #{$config[:iptables_chain_name]} from nat table..."
 
     command = Command.delete_chain($config[:iptables_chain_name], 'nat')
-    `#{$config[:iptables_bin_path]} #{command}`
+    output = `#{$config[:iptables_bin_path]} #{command}`
+    puts "#{$config[:iptables_bin_path]} #{command} => #{output}"
 
     EventMachine.stop
   end

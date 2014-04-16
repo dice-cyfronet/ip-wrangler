@@ -1,6 +1,8 @@
 $config = YAML.load_file('config.yml')
 
-File.delete($config[:log_file_path])
+if File.exist?($config[:log_file_path])
+  File.delete($config[:log_file_path])
+end
 $logger = Logger.new($config[:log_file_path])
 
 $nat = NAT.new($nat_config, $config[:db_name], $config[:iptables_chain_name], $config[:iptables_bin_path], $logger)
