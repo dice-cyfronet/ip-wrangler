@@ -5,7 +5,7 @@ class NAT
   def initialize(config, db_name, chain_name, iptables_bin_path, logger)
     @config = config
     @db = DB.new(db_name, logger)
-    @iptables = Iptables.new(chain_name, iptables_bin_path, logger)
+    @iptables = Iptables.new(chain_name, logger)
     @logger = logger
   end
 

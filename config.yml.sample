@@ -2,7 +2,6 @@
 :db_name: ipt.db
 
 :iptables_chain_name: IPT_WR
-:iptables_bin_path: /sbin/iptables
 
 :port_ip: 10.0.0.1
 :port_start: 1024

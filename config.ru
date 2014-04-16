@@ -1,3 +1,5 @@
+$iptables_bin_path = '/sbin/iptables'
+
 require 'bundler'
 require 'eventmachine'
 require 'fileutils'
@@ -13,6 +15,17 @@ require './ipt_db'
 require './ipt_ip'
 require './ipt_iptables'
 require './ipt_nat'
+
+
+def execute_command(command)
+  output = system "#{command}"
+  puts "Execute: #{command} => output: #{output}, result: #{$?.exitstatus}"
+  output
+end
+
+def execute_iptables_command(command)
+  execute_command "#{$iptables_bin_path} #{command}"
+end
 
 console_logger = File.new('log/ipt_wr_console.log', 'w')
 
@@ -66,21 +79,15 @@ db.disconnect
 
 puts "Creating chain #{$config[:iptables_chain_name]} in nat table..."
 
-command = Command.new_chain($config[:iptables_chain_name], 'nat')
-output = `#{$config[:iptables_bin_path]} #{command}`
-puts "#{$config[:iptables_bin_path]} #{command} => #{output}"
+execute_iptables_command Command.new_chain($config[:iptables_chain_name], 'nat')
 
 puts "Flush (if any rule exist) chain #{$config[:iptables_chain_name]}..."
 
-command = Command.flush_chain($config[:iptables_chain_name], 'nat')
-output = `#{$config[:iptables_bin_path]} #{command}`
-puts "#{$config[:iptables_bin_path]} #{command} => #{output}"
+execute_iptables_command Command.flush_chain($config[:iptables_chain_name], 'nat')
 
 puts 'Appending rule to PREROUTING chain...'
 
-command = Command.append_rule('PREROUTING', 'nat', [Parameter.jump($config[:iptables_chain_name])])
-output = `#{$config[:iptables_bin_path]} #{command}`
-puts "#{$config[:iptables_bin_path]} #{command} => #{output}"
+execute_iptables_command Command.append_rule('PREROUTING', 'nat', [Parameter.jump($config[:iptables_chain_name])])
 
 Bundler.require
 
@@ -101,21 +108,15 @@ EventMachine.schedule do
 
     puts 'Deleting rule from PREROUTING chain...'
 
-    command = Command.delete_rule_spec('PREROUTING', [Parameter.jump($config[:iptables_chain_name])], 'nat')
-    output = `#{$config[:iptables_bin_path]} #{command}`
-    puts "#{$config[:iptables_bin_path]} #{command} => #{output}"
+    execute_iptables_command Command.delete_rule_spec('PREROUTING', [Parameter.jump($config[:iptables_chain_name])], 'nat')
 
     puts "Flush chain #{$config[:iptables_chain_name]}..."
 
-    command = Command.flush_chain($config[:iptables_chain_name], 'nat')
-    output = `#{$config[:iptables_bin_path]} #{command}`
-    puts "#{$config[:iptables_bin_path]} #{command} => #{output}"
+    execute_iptables_command Command.flush_chain($config[:iptables_chain_name], 'nat')
 
     puts "Deleting chain #{$config[:iptables_chain_name]} from nat table..."
 
-    command = Command.delete_chain($config[:iptables_chain_name], 'nat')
-    output = `#{$config[:iptables_bin_path]} #{command}`
-    puts "#{$config[:iptables_bin_path]} #{command} => #{output}"
+    execute_iptables_command Command.delete_chain($config[:iptables_chain_name], 'nat')
 
     EventMachine.stop
   end

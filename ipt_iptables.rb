@@ -5,10 +5,9 @@ $grep_bin_path = '/bin/grep'
 
 class Iptables
 
-  def initialize(chain_name, iptables_bin_path, logger)
+  def initialize(chain_name, logger)
     @chain_name = chain_name
     @logger = logger
-    @iptables_bin_path = iptables_bin_path
   end
 
   def rule_nat_port(public_ip, public_port, private_ip, private_port, protocol)
@@ -65,21 +64,18 @@ class Iptables
   end
 
   def exists_nat_port?(public_ip, public_port, protocol, private_ip, private_port)
-    command = "#{$iptables_bin_path} -t nat -L -n -v #{@chain_name} | #{$awk_bin_path} '{print $9, $10, $11, $12}' | #{$grep_bin_path} -i '^#{public_ip} #{protocol} dpt:#{public_port} to:#{private_ip}:#{private_port}$'"
-    output = `#{command}`.empty?
-    @logger.info "#{command} =>\n\toutput: #{output}\n\texitstatus: #{$?.exitstatus}"
+    output = execute_command "#{$iptables_bin_path} -t nat -L -n -v #{@chain_name} | #{$awk_bin_path} '{print $9, $10, $11, $12}' | #{$grep_bin_path} -i '^#{public_ip} #{protocol} dpt:#{public_port} to:#{private_ip}:#{private_port}$'"
+    output.empty?
   end
 
   def exists_nat_ip?(public_ip, private_ip)
-    command = "#{$iptables_bin_path} -t nat -L -n -v #{@chain_name} | #{$awk_bin_path} '{print $9, $10}' | #{$grep_bin_path} -i '^#{public_ip}' to:#{private_ip}"
-    output = `#{command}`.empty?
-    @logger.info "#{command} =>\n\toutput: #{output}\n\texitstatus: #{$?.exitstatus}"
+    output = execute_command "#{$iptables_bin_path} -t nat -L -n -v #{@chain_name} | #{$awk_bin_path} '{print $9, $10}' | #{$grep_bin_path} -i '^#{public_ip}' to:#{private_ip}"
+    output.empty?
   end
 
   def execute(*commands)
     commands.each do |command|
-      output = system "#{@iptables_bin_path} #{command}"
-      @logger.info "#{@iptables_bin_path} #{command} =>\n\toutput: #{output}\n\texitstatus: #{$?.exitstatus}"
+      execute_iptables_command "#{command}"
     end
   end
 
