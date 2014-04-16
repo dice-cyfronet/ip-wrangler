@@ -97,7 +97,7 @@ class Command
       delete_chain: '--delete-chain',
   }
 
-  def parameters_to_s(parameters)
+  def self.parameters_to_s(parameters)
     __parameters = ''
     parameters.each { |parameter| __parameters = "#{__parameters} #{parameter} " }
     "#{__parameters}".gsub(/\s+/, ' ')
