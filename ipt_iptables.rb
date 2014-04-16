@@ -1,26 +1,82 @@
-$tables = {
-    filter: 'filter',
-    nat: 'nat',
-    mangle: 'mangle',
-    raw: 'raw',
-    security: 'security'
-}
+$iptables_bin_path = '/sbin/iptables'
+$awk_bin_path = '/usr/bin/awk'
+$tail_bin_path = '/usr/bin/tail'
+$grep_bin_path = '/bin/grep'
 
-class Base
+class Iptables
 
-  def initialize(chains=[])
-    @chains = chains
+  def initialize(chain_name, iptables_bin_path, logger)
+    @chain_name = chain_name
+    @logger = logger
+    @iptables_bin_path = iptables_bin_path
   end
 
-  def add_chain(chain)
-    @chains << chain
-    self
+  def rule_nat_port(public_ip, public_port, private_ip, private_port, protocol)
+    [Parameter.destination(public_ip),
+     Parameter.protocol(protocol),
+     Parameter.destination_port(public_port),
+     Parameter.jump('DNAT'),
+     Parameter.to_destination("#{private_ip}:#{private_port}")]
   end
 
-  def to_s
-    chains = ''
-    @chains.each { |chain| chains = "#{chains}\n#{chain}" }
-    "#{chains}"
+  def rule_nat_ip(public_ip, private_ip)
+    rule_dnat = [Parameter.destination(public_ip),
+                 Parameter.jump('DNAT'),
+                 Parameter.to_destination(private_ip)]
+    rule_snat = [Parameter.source(private_ip),
+                 Parameter.jump('SNAT'),
+                 Parameter.to_destination(public_ip)]
+
+    return rule_dnat, rule_snat
+  end
+
+  def append_nat_port(public_ip, public_port, private_ip, private_port, protocol)
+    rule = rule_nat_port public_ip, public_port, private_ip, private_port, protocol
+
+    command = Command.append_rule @chain_name, 'nat', rule
+
+    execute command
+  end
+
+  def append_nat_ip(public_ip, private_ip)
+    rule_dnat, rule_snat = rule_nat_ip public_ip, private_ip
+
+    command_dnat = Command.append_rule @chain_name, 'nat', rule_dnat
+    command_snat = Command.append_rule @chain_name, 'nat', rule_snat
+
+    execute command_dnat, command_snat
+  end
+
+  def delete_nat_port(public_ip, public_port, private_ip, private_port, protocol)
+    rule = rule_nat_port public_ip, public_port, private_ip, private_port, protocol
+
+    command = Command.delete_rule_spec @chain_name, rule, 'nat'
+
+    execute command
+  end
+
+  def delete_nat_ip(public_ip, private_ip)
+    rule_dnat, rule_snat = rule_nat_ip public_ip, private_ip
+
+    command_dnat = Command.delete_rule_spec @chain_name, rule_dnat, 'nat'
+    command_snat = Command.delete_rule_spec @chain_name, rule_snat, 'nat'
+
+    execute command_dnat, command_snat
+  end
+
+  def exists_nat_port?(public_ip, public_port, protocol, private_ip, private_port)
+    `#{$iptables_bin_path} -t nat -L -n -v #{@chain_name} | #{$awk_bin_path} '{print $9, $10, $11, $12}' | #{$grep_bin_path} -i '^#{public_ip} #{protocol} dpt:#{public_port} to:#{private_ip}:#{private_port}$'`.empty?
+  end
+
+  def exists_nat_ip?(public_ip, private_ip)
+    `#{$iptables_bin_path} -t nat -L -n -v #{@chain_name} | #{$awk_bin_path} '{print $9, $10}' | #{$grep_bin_path} -i '^#{public_ip}' to:#{private_ip}`.empty?
+  end
+
+  def execute(*commands)
+    commands.each do |command|
+      output = system "#{@iptables_bin_path} #{command}"
+      @logger.info "#{@iptables_bin_path} #{command} =>\n\toutput: #{output}\n\texitstatus: #{$?.exitstatus}"
+    end
   end
 
 end
@@ -41,20 +97,26 @@ class Command
       delete_chain: '--delete-chain',
   }
 
+  def parameters_to_s(parameters)
+    __parameters = ''
+    parameters.each { |parameter| __parameters = "#{__parameters} #{parameter} " }
+    "#{__parameters}".gsub(/\s+/, ' ')
+  end
+
   def self.append_rule(chain, table, parameters)
-    "-t #{table} #{@@commands[:append_rule]} #{chain} #{parameters}"
+    "-t #{table} #{@@commands[:append_rule]} #{chain} #{parameters_to_s(parameters)}"
   end
 
   def self.insert_rule(chain, num, table, parameters)
-    "-t #{table} #{@@commands[:insert_rule]} #{chain} #{num} #{parameters}"
+    "-t #{table} #{@@commands[:insert_rule]} #{chain} #{num} #{parameters_to_s(parameters)}"
   end
 
   def self.replace_rule(chain, num, table, parameters)
-    "-t #{table} #{@@commands[:replace_rule]} #{chain} #{num} #{parameters}"
+    "-t #{table} #{@@commands[:replace_rule]} #{chain} #{num} #{parameters_to_s(parameters)}"
   end
 
   def self.check_rule(chain, table, parameters)
-    "-t #{table} #{@@commands[:check_rule]} #{chain} #{parameters}"
+    "-t #{table} #{@@commands[:check_rule]} #{chain} #{parameters_to_s(parameters)}"
   end
 
   def self.delete_rule(chain, num, table)
@@ -91,44 +153,6 @@ class Command
 
 end
 
-class Chain
-
-  def initialize(rules=[])
-    @rules = rules
-  end
-
-  def add_rule(rule)
-    @rules << rule
-    self
-  end
-
-  def to_s
-    rules = ''
-    @rules.each { |rule| rules = "#{rules}\n#{rule}" }
-    "#{rules}".gsub(/\s+/, ' ')
-  end
-
-end
-
-class Rule
-
-  def initialize(parameters=[])
-    @parameters = parameters
-  end
-
-  def add_parameter(parameter)
-    @parameters << parameter
-    self
-  end
-
-  def to_s
-    parameters = ''
-    @parameters.each { |parameter| parameters = "#{parameters} #{parameter} " }
-    "#{parameters}".gsub(/\s+/, ' ')
-  end
-
-end
-
 class Parameter
 
   @@parameters = {
@@ -139,7 +163,7 @@ class Parameter
       destination_port: '--destination-port',
       in_interface: '--in-interface',
       out_interface: '--out-interface',
-      to: '--to-destination',
+      to_destination: '--to-destination',
       jump: '--jump',
   }
 
@@ -179,57 +203,12 @@ class Parameter
     new(@@parameters[:out_interface], out_interface)
   end
 
+  def self.to_destination(destination)
+    new(@@parameters[:to_destination], destination)
+  end
+
   def self.jump(target)
     new(@@parameters[:jump], target)
   end
 
-  def self.to(destination)
-    new(@@parameters[:to], destination)
-  end
-
-end
-
-def rule_nat_ip_port(public_ip, public_port, private_ip, private_port, protocol)
-  Rule.new([Parameter.destination("#{public_ip}"),
-            Parameter.protocol(protocol), Parameter.destination_port(public_port),
-            Parameter.jump('DNAT'), Parameter.to("#{private_ip}:#{private_port}")])
-end
-
-def rule_nat_ip(public_ip, private_ip)
-  rule_dnat = Rule.new([Parameter.destination("#{public_ip}"),
-                        Parameter.jump('DNAT'), Parameter.to("#{private_ip}")])
-  rule_snat = Rule.new([Parameter.source("#{private_ip}"),
-                        Parameter.jump('SNAT'), Parameter.to("#{public_ip}")])
-
-  return rule_dnat, rule_snat
-end
-
-def append_nat_ip_port(chain, public_ip, public_port, private_ip, private_port, protocol)
-  rule = rule_nat_ip_port(public_ip, public_port, private_ip, private_port, protocol)
-
-  Command.append_rule(chain, 'nat', rule)
-end
-
-def append_nat_ip(chain, public_ip, private_ip)
-  rule_dnat, rule_snat = rule_nat_ip(public_ip, private_ip)
-
-  dnat = Command.append_rule(chain, 'nat', rule_dnat)
-  snat = Command.append_rule(chain, 'nat', rule_snat)
-
-  return dnat, snat
-end
-
-def delete_nat_ip_port(chain, public_ip, public_port, private_ip, private_port, protocol)
-  rule = rule_nat_ip_port(public_ip, public_port, private_ip, private_port, protocol)
-
-  Command.delete_rule_spec(chain, rule, 'nat')
-end
-
-def delete_nat_ip(chain, public_ip, private_ip)
-  rule_dnat, rule_snat = rule_nat_ip(public_ip, private_ip)
-
-  dnat = Command.delete_rule_spec(chain, rule_dnat, 'nat')
-  snat = Command.delete_rule_spec(chain, rule_snat, 'nat')
-
-  return dnat, snat
 end

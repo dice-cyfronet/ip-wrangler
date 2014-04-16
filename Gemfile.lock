@@ -8,6 +8,7 @@ GEM
     rack-protection (1.5.3)
       rack
     sequel (4.9.0)
+    settingslogic (2.0.9)
     sinatra (1.4.5)
       rack (~> 1.4)
       rack-protection (~> 1.4)
@@ -25,6 +26,7 @@ PLATFORMS
 DEPENDENCIES
   json
   sequel
+  settingslogic
   sinatra
   sqlite3
   thin

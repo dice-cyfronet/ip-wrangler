@@ -1,34 +1,3 @@
-class IP
-  attr_accessor :ip
-
-  def initialize(ip)
-    @ip = ip
-  end
-
-  def to_s
-    "IP: #{@ip[0]}.#{@ip[1]}.#{@ip[2]}.#{@ip[3]}"
-  end
-
-  def to_s_ip
-    "#{@ip[0]}.#{@ip[1]}.#{@ip[2]}.#{@ip[3]}"
-  end
-end
-
-class Port < IP
-  attr_accessor :port, :protocol
-
-
-  def initialize(ip, port, protocol)
-    super(ip)
-    @port = port
-    @protocol = protocol
-  end
-
-  def to_s
-    "Port: #{@ip[0]}.#{@ip[1]}.#{@ip[2]}.#{@ip[3]}:#{@port}/#{@protocol}"
-  end
-end
-
 def parse_ip(ip)
   ip.split(/\./).map { |octet| octet.to_i }
 end

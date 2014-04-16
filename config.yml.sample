@@ -1,9 +1,14 @@
-:log_file: log/ipt_wr_app.log
-:db: ipt.db
+:log_file_path: log/ipt_wr_app.log
+:db_name: ipt.db
 
-:iptables_chain: IPT_WR
-:iptables_path: /sbin/iptables
+:iptables_chain_name: IPT_WR
+:iptables_bin_path: /sbin/iptables
 
-:port_ip: 127.0.0.1
+:port_ip: 10.0.0.1
 :port_start: 1024
 :port_stop: 2048
+
+:ip:
+    - 10.0.0.2
+    - 10.0.0.3
+    - 10.0.0.4
