@@ -76,7 +76,7 @@ command = Command.flush_chain($config[:iptables_chain_name], 'nat')
 
 puts 'Appending rule to PREROUTING chain...'
 
-command = Command.append_rule('PREROUTING', 'nat', Rule.new([Parameter.jump($config[:iptables_chain_name])]))
+command = Command.append_rule('PREROUTING', 'nat', [Parameter.jump($config[:iptables_chain_name])])
 `#{$config[:iptables_bin_path]} #{command}`
 
 Bundler.require
