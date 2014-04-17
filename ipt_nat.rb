@@ -19,12 +19,12 @@ class NAT
 
   def find_port(private_ip, private_port, protocol)
     10.times do
-      public_port = rand(@config[:last_port] - @config[:first_port]) + @config[:first_port]
-      return @config[:public_ip], public_port if used_port? @config[:public_ip], public_port, protocol and
-          @iptables.exists_nat_port? @config[:public_ip], public_port, protocol, private_ip, private_port
+      public_port = rand(@config[:port_stop] - @config[:port_start]) + @config[:port_start]
+      return @config[:port_ip], public_port if used_port? @config[:port_ip], public_port, protocol and
+          @iptables.exists_nat_port? @config[:port_ip], public_port, protocol, private_ip, private_port
     end
-    (@config[:first_port]..@config[:last_port]).each do |public_port|
-      return @config[:public_ip], public_port unless @db.exists_nat_port? @config[:public_ip], public_port, protocol, private_ip, private_port
+    (@config[:port_start]..@config[:port_stop]).each do |public_port|
+      return @config[:port_ip], public_port unless @db.exists_nat_port? @config[:port_ip], public_port, protocol, private_ip, private_port
     end
   end
 
