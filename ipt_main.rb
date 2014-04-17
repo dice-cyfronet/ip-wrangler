@@ -162,3 +162,76 @@ delete '/nat/ip/*' do |private_ip|
     end
   end
 end
+
+# OLD API (compatibility)
+
+get '/' do
+  'IptWr REST Endpoint!'
+end
+
+get '/dnat' do
+  sandbox do
+    $nat.get_nat_ports.to_json
+  end
+end
+
+get '/dnat/*' do |ip|
+  sandbox do
+    $nat.get_nat_ports(ip).to_json
+  end
+end
+
+post '/dnat/*' do |ip|
+  sandbox do
+    redirects = []
+
+    request.body.rewind
+    data = JSON.parse request.body.read
+
+    data.each do |dpp|
+      redirects.push $nat.lock_port ip, dpp['port'], dpp['proto']
+    end
+
+    if redirects.length > 0
+      redirects.to_json
+    else
+      404
+    end
+  end
+end
+
+delete '/dnat/*/*/*' do |ip, port, proto|
+  sandbox do
+    released_port = $nat.release_port ip, port, proto
+
+    if released_port.length > 0
+      204
+    else
+      404
+    end
+  end
+end
+
+delete '/dnat/*/*' do |ip, port|
+  sandbox do
+    released_port = $nat.release_port ip, port
+
+    if released_port.length > 0
+      204
+    else
+      404
+    end
+  end
+end
+
+delete '/dnat/*' do |ip|
+  sandbox do
+    released_port = $nat.release_port ip
+
+    if released_port.length > 0
+      204
+    else
+      404
+    end
+  end
+end
