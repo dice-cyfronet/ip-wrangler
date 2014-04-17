@@ -1,5 +1,3 @@
-$iptables_bin_path = '/sbin/iptables'
-
 require 'bundler'
 require 'eventmachine'
 require 'fileutils'
@@ -15,16 +13,7 @@ require './ipt_db'
 require './ipt_ip'
 require './ipt_iptables'
 require './ipt_nat'
-
-def execute_command(command)
-  output = system "#{command}"
-  puts "Execute: #{command} => output: #{output}, result: #{$?.exitstatus}"
-  output
-end
-
-def execute_iptables_command(command)
-  execute_command "#{$iptables_bin_path} #{command}"
-end
+require './ipt_exec'
 
 unless ENV.has_key?('__NO_LOG')
   console_logger = File.new('log/ipt_wr_console.log', 'w')
