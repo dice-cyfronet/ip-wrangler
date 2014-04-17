@@ -7,6 +7,13 @@ class NAT
     @db = DB.new(db_name, logger)
     @iptables = Iptables.new(chain_name, logger)
     @logger = logger
+
+    @db.select_nat_port.each do |nat_port|
+      @iptables.append_nat_port nat_port.public_ip, nat_port.public_port, nat_port.private_ip, nat_port.private_port, nat_port.protocol
+    end
+    @db.select_nat_ip.each do |nat_ip|
+      @iptables.append_nat_ip nat_ip.public_ip, nat_ip.private_ip
+    end
   end
 
   def used_port?(public_ip, public_port, protocol)
