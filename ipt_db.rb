@@ -7,19 +7,12 @@ class DB
 
   def select_nat_port(private_ip=nil, private_port=nil, protocol=nil)
     params = {:private_ip => private_ip, :private_port => private_port, :protocol => protocol}.select { |key, value| value != nil }
-    @db[:nat_ports].where(params).map do |nat_port|
-      {:public_ip => nat_port.public_ip, :public_port => nat_port.public_port,
-       :private_ip => nat_port.private_ip, :private_port => nat_port.private_port,
-       :protocol => nat_port.protocol}
-    end
+    @db[:nat_ports].where(params)
   end
 
   def select_nat_ip(private_ip=nil, public_ip=nil)
     params = {:private_ip => private_ip, :public_ip => public_ip}.select { |key, value| value != nil }
-    @db[:nat_ips].where(params).map do |nat_ip|
-      {:public_ip => nat_ip.public_ip,
-       :private_ip => nat_ip.private_ip}
-    end
+    @db[:nat_ips].where(params)
   end
 
   def insert_nat_port(public_ip, public_port, private_ip, private_port, protocol)
