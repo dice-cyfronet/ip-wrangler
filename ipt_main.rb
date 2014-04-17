@@ -39,16 +39,21 @@ end
 # List any NAT port(s)
 get '/nat/port' do
   sandbox do
-    $nat.get_nat_ports.to_json
+    nat_ports = $nat.get_nat_ports.map do |nat_port|
+      nat_port
+    end
+    nat_ports.to_json
   end
 end
 
 # List NAT port(s) for specified private IP
 get '/nat/port/*' do |private_ip|
   sandbox do
-
     if valid_ip? private_ip
-      $nat.get_nat_ports(private_ip).to_json
+      nat_ports = $nat.get_nat_ports(private_ip).map do |nat_port|
+        nat_port
+      end
+      nat_ports.to_json
     else
       500
     end
@@ -58,7 +63,10 @@ end
 # List any NAT IP(s)
 get '/nat/ip' do
   sandbox do
-    $nat.get_nat_ips.to_json
+    nat_ips = $nat.get_nat_ips.map do |nat_ip|
+      nat_ip
+    end
+    nat_ips.to_json
   end
 end
 
@@ -66,7 +74,10 @@ end
 get '/nat/ip/*' do |private_ip|
   sandbox do
     if valid_ip? private_ip
-      $nat.get_nat_ips(private_ip).to_json
+      nat_ips = $nat.get_nat_ips(private_ip).map do |nat_ip|
+        nat_ip
+      end
+      nat_ips.to_json
     else
       500
     end
