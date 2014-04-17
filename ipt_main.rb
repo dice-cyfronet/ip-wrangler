@@ -87,6 +87,7 @@ end
 # Create NAT port(s) for specified IP
 post '/nat/port/*/*/*' do |private_ip, private_port, protocol|
   sandbox do
+    private_port = private_port.to_i
     if valid_ip? private_ip and valid_port? private_port and valid_protocol? protocol
       public_ip_port = $nat.lock_port private_ip, private_port, protocol
 
@@ -104,6 +105,7 @@ end
 # Create NAT port(s) for specified IP
 post '/nat/port/*/*' do |private_ip, private_port|
   sandbox do
+    private_port = private_port.to_i
     if valid_ip? private_ip and valid_port? private_port
       public_ip_port_tcp = $nat.lock_port private_ip, private_port, 'tcp'
       public_ip_port_udp = $nat.lock_port private_ip, private_port, 'udp'
@@ -139,6 +141,7 @@ end
 # Delete NAT port with specified protocol for specified IP
 delete '/nat/port/*/*/*' do |private_ip, private_port, protocol|
   sandbox do
+    private_port = private_port.to_i
     if valid_ip? private_ip and valid_port? private_port and valid_protocol? protocol
       released_port = $nat.release_port private_ip, private_port, protocol
 
@@ -156,6 +159,7 @@ end
 # Delete NAT port with any protocol (TCP and UDP) for specified IP
 delete '/nat/port/*/*' do |private_ip, private_port|
   sandbox do
+    private_port = private_port.to_i
     if valid_ip? private_ip and valid_port? private_port
       released_port = $nat.release_port private_ip, private_port
 
