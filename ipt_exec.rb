@@ -1,7 +1,7 @@
 $iptables_bin_path = '/sbin/iptables'
 
 def execute_command(command)
-  output = system "#{command}"
+  output = `#{command}`
   puts "Execute: #{command} => output: #{output}, result: #{$?.exitstatus}"
   output
 end
