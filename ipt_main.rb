@@ -24,12 +24,6 @@ def sandbox(&block)
   end
 end
 
-get '/' do
-  sandbox do
-    204
-  end
-end
-
 # List any NAT port(s)
 get '/nat/port' do
   sandbox do
