@@ -70,8 +70,8 @@ class NAT
   def release_port(private_ip, private_port=nil, protocol=nil)
     released_port = []
     @db.select_nat_port(private_ip, private_port, protocol).each do |nat_port|
-      @iptables.delete_nat_port nat_port.public_ip, nat_port.public_port, nat_port.private_ip, nat_port.private_port, nat_port.protocol
-      released_port.push({:public_ip => nat_port.public_ip, :public_port => nat_port.public_port})
+      @iptables.delete_nat_port nat_port[:public_ip], nat_port[:public_port], nat_port[:private_ip], nat_port[:private_port], nat_port[:protocol]
+      released_port.push({:public_ip => nat_port[:public_ip], :public_port => nat_port[:public_port]})
     end
     @db.delete_nat_port private_ip, private_port, protocol
     released_port
@@ -80,8 +80,8 @@ class NAT
   def release_ip(private_ip, public_ip=nil)
     released_ip = []
     @db.select_nat_ip(private_ip, public_ip).each do |nat_ip|
-      @iptables.delete_nat_ip nat_ip.public_ip, nat_ip.private_ip
-      released_ip.push({:public_ip => nat_ip.public_ip})
+      @iptables.delete_nat_ip nat_ip[:public_ip], nat_ip[:private_ip]
+      released_ip.push({:public_ip => nat_ip[:public_ip]})
     end
     @db.delete_nat_ip private_ip, public_ip
     released_ip
