@@ -16,7 +16,6 @@ require './ipt_ip'
 require './ipt_iptables'
 require './ipt_nat'
 
-
 def execute_command(command)
   output = system "#{command}"
   puts "Execute: #{command} => output: #{output}, result: #{$?.exitstatus}"
@@ -27,10 +26,9 @@ def execute_iptables_command(command)
   execute_command "#{$iptables_bin_path} #{command}"
 end
 
-console_logger = File.new('log/ipt_wr_console.log', 'w')
-
-STDOUT.reopen(console_logger)
-STDERR.reopen(console_logger)
+#console_logger = File.new('log/ipt_wr_console.log', 'w')
+#STDOUT.reopen(console_logger)
+#STDERR.reopen(console_logger)
 
 puts 'Checking if config.yml is existing...'
 

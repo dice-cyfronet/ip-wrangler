@@ -2,7 +2,7 @@ $lsof_bin_path = '/usr/bin/lsof'
 
 class NAT
 
-  def initialize(config, db_name, chain_name, iptables_bin_path, logger)
+  def initialize(config, db_name, chain_name, logger)
     @config = config
     @db = DB.new(db_name, logger)
     @iptables = Iptables.new(chain_name, logger)
