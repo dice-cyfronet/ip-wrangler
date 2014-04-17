@@ -274,6 +274,7 @@ end
 
 delete '/dnat/*/*/*' do |ip, port, proto|
   sandbox do
+    port = port.to_i
     if valid_ip? ip and valid_port? port and valid_protocol? proto
       released_port = $nat.release_port ip, port, proto
 
@@ -290,6 +291,7 @@ end
 
 delete '/dnat/*/*' do |ip, port|
   sandbox do
+    port = port.to_i
     if valid_ip? ip and valid_port? port
       released_port = $nat.release_port ip, port
 
