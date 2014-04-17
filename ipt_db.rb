@@ -28,13 +28,13 @@ class DB
 
   def delete_nat_port(private_ip, private_port=nil, protocol=nil)
     params = {:private_ip => private_ip, :private_port => private_port, :protocol => protocol}.select { |key, value| value != nil }
-    @db[:nat_ports].where(*params).delete
+    @db[:nat_ports].where(params).delete
     @logger.info "Delete nat ip port entry: #{private_ip}/#{private_port} (#{protocol})"
   end
 
   def delete_nat_ip(private_ip, public_ip=nil)
     params = {:private_ip => private_ip, :public_ip => public_ip}.select { |key, value| value != nil }
-    @db[:nat_ips].where(*params).delete
+    @db[:nat_ips].where(params).delete
     @logger.info "Delete nat ip entry: #{public_ip}"
   end
 
