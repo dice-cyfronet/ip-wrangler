@@ -1,4 +1,4 @@
-$iptables_bin_path = '/sbin/iptables'
+$iptables_bin_path = '/sbin/iptables -w'
 $awk_bin_path = '/usr/bin/awk'
 $tail_bin_path = '/usr/bin/tail'
 $grep_bin_path = '/bin/grep'
