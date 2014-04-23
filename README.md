@@ -44,3 +44,31 @@ Deleting:
 
 * `DELETE /nat/ip/<private_ip>/<public_ip>` - delete NAT IP for specified private IP
 * `DELETE /nat/ip/<private_ip>` - delete any NAT IP for specified private IP
+
+## API (old version)
+
+Listing:
+
+* `GET /` - get information about REST service
+* `GET /dnat` - list all NAT port(s)
+* `GET /dnat/<private_ip>` - list NAT port(s) for specified private IP
+
+Creating:
+
+* `POST /dnat/<private_ip>` - create NAT port for specified IP, request body should be in format
+    [
+        {
+            "port": 21,
+            "proto": tcp
+        },
+        {
+            "port": 22,
+            "proto": udp
+        }
+    ]
+
+Deleting:
+
+* `DELETE /dnat/<private_ip>/<private_port>/<protocol>` - delete NAT port with specified protocol for specified private IP
+* `DELETE /dnat/<private_ip>/<private_port>` - delete NAT port for specified IP
+* `DELETE /dnat/<private_ip>` - delete any NAT port for specified IP
