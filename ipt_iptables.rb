@@ -24,7 +24,7 @@ class Iptables
                  Parameter.to_destination(private_ip)]
     rule_snat = [Parameter.source(private_ip),
                  Parameter.jump('SNAT'),
-                 Parameter.to_destination(public_ip)]
+                 Parameter.to(public_ip)]
 
     return rule_dnat, rule_snat
   end
@@ -164,6 +164,7 @@ class Parameter
       in_interface: '--in-interface',
       out_interface: '--out-interface',
       to_destination: '--to-destination',
+      to: '--to',
       jump: '--jump',
   }
 
@@ -205,6 +206,10 @@ class Parameter
 
   def self.to_destination(destination)
     new(@@parameters[:to_destination], destination)
+  end
+
+  def self.to(destination)
+    new(@@parameters[:to], destination)
   end
 
   def self.jump(target)
