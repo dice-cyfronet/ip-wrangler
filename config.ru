@@ -77,7 +77,11 @@ execute_iptables_command Command.flush_chain($config[:iptables_chain_name], 'nat
 
 puts 'Appending rule to PREROUTING chain...'
 
-execute_iptables_command Command.append_rule('PREROUTING', 'nat', [Parameter.jump($config[:iptables_chain_name])])
+execute_iptables_command Command.append_rule('PREROUTING', 'nat', [Parameter.jump("#{$config[:iptables_chain_name]}_PRE")])
+
+puts 'Appending rule to POSTROUTING chain...'
+
+execute_iptables_command Command.append_rule('POSTROUTING', 'nat', [Parameter.jump("#{$config[:iptables_chain_name]}_POST")])
 
 Bundler.require
 
@@ -98,7 +102,11 @@ EventMachine.schedule do
 
     puts 'Deleting rule from PREROUTING chain...'
 
-    execute_iptables_command Command.delete_rule_spec('PREROUTING', [Parameter.jump($config[:iptables_chain_name])], 'nat')
+    execute_iptables_command Command.delete_rule_spec('PREROUTING', [Parameter.jump("#{$config[:iptables_chain_name]}_PRE")], 'nat')
+
+    puts 'Deleting rule from POSTROUTING chain...'
+
+    execute_iptables_command Command.delete_rule_spec('POSTROUTING', [Parameter.jump("#{$config[:iptables_chain_name]}_POST")], 'nat')
 
     puts "Flush chain #{$config[:iptables_chain_name]}..."
 

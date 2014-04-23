@@ -32,7 +32,7 @@ class Iptables
   def append_nat_port(public_ip, public_port, private_ip, private_port, protocol)
     rule = rule_nat_port public_ip, public_port, private_ip, private_port, protocol
 
-    command = Command.append_rule @chain_name, 'nat', rule
+    command = Command.append_rule "#{@chain_name}_PRE", 'nat', rule
 
     execute command
   end
@@ -40,8 +40,8 @@ class Iptables
   def append_nat_ip(public_ip, private_ip)
     rule_dnat, rule_snat = rule_nat_ip public_ip, private_ip
 
-    command_dnat = Command.append_rule @chain_name, 'nat', rule_dnat
-    command_snat = Command.append_rule @chain_name, 'nat', rule_snat
+    command_dnat = Command.append_rule "#{@chain_name}_PRE", 'nat', rule_dnat
+    command_snat = Command.append_rule "#{@chain_name}_POST", 'nat', rule_snat
 
     execute command_dnat, command_snat
   end
@@ -49,7 +49,7 @@ class Iptables
   def delete_nat_port(public_ip, public_port, private_ip, private_port, protocol)
     rule = rule_nat_port public_ip, public_port, private_ip, private_port, protocol
 
-    command = Command.delete_rule_spec @chain_name, rule, 'nat'
+    command = Command.delete_rule_spec "#{@chain_name}_PRE", rule, 'nat'
 
     execute command
   end
@@ -57,19 +57,19 @@ class Iptables
   def delete_nat_ip(public_ip, private_ip)
     rule_dnat, rule_snat = rule_nat_ip public_ip, private_ip
 
-    command_dnat = Command.delete_rule_spec @chain_name, rule_dnat, 'nat'
-    command_snat = Command.delete_rule_spec @chain_name, rule_snat, 'nat'
+    command_dnat = Command.delete_rule_spec "#{@chain_name}_PRE", rule_dnat, 'nat'
+    command_snat = Command.delete_rule_spec "#{@chain_name}_POST", rule_snat, 'nat'
 
     execute command_dnat, command_snat
   end
 
   def exists_nat_port?(public_ip, public_port, protocol, private_ip, private_port)
-    output = execute_command "#{$iptables_bin_path} -t nat -n -v -L #{@chain_name} | #{$awk_bin_path} '{print $9, $10, $11, $12}' | #{$grep_bin_path} -i '^#{public_ip} #{protocol} dpt:#{public_port} to:#{private_ip}:#{private_port}$'"
+    output = execute_command "#{$iptables_bin_path} -t nat -n -v -L #{@chain_name}_PRE | #{$awk_bin_path} '{print $9, $10, $11, $12}' | #{$grep_bin_path} -i '^#{public_ip} #{protocol} dpt:#{public_port} to:#{private_ip}:#{private_port}$'"
     output.empty?
   end
 
   def exists_nat_ip?(public_ip, private_ip)
-    output = execute_command "#{$iptables_bin_path} -t nat -n -v -L #{@chain_name} | #{$awk_bin_path} '{print $9, $10}' | #{$grep_bin_path} -i '^#{public_ip} to:#{private_ip}'"
+    output = execute_command "#{$iptables_bin_path} -t nat -n -v -L #{@chain_name}_PRE | #{$awk_bin_path} '{print $9, $10}' | #{$grep_bin_path} -i '^#{public_ip} to:#{private_ip}'"
     output.empty?
   end
 
