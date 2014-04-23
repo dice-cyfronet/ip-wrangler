@@ -67,13 +67,21 @@ end
 
 db.disconnect
 
-puts "Creating chain #{$config[:iptables_chain_name]} in nat table..."
+puts "Creating chain #{$config[:iptables_chain_name]}_PRE in nat table..."
 
-execute_iptables_command Command.new_chain($config[:iptables_chain_name], 'nat')
+execute_iptables_command Command.new_chain("#{$config[:iptables_chain_name]}_PRE", 'nat')
 
-puts "Flush (if any rule exist) chain #{$config[:iptables_chain_name]}..."
+puts "Creating chain #{$config[:iptables_chain_name]}_POST in nat table..."
 
-execute_iptables_command Command.flush_chain($config[:iptables_chain_name], 'nat')
+execute_iptables_command Command.new_chain("#{$config[:iptables_chain_name]}_POST", 'nat')
+
+puts "Flush (if any rule exist) chain #{$config[:iptables_chain_name]}_PRE..."
+
+execute_iptables_command Command.flush_chain("#{$config[:iptables_chain_name]}_PRE", 'nat')
+
+puts "Flush (if any rule exist) chain #{$config[:iptables_chain_name]}_POST..."
+
+execute_iptables_command Command.flush_chain("#{$config[:iptables_chain_name]}_POST", 'nat')
 
 puts 'Appending rule to PREROUTING chain...'
 
@@ -108,13 +116,21 @@ EventMachine.schedule do
 
     execute_iptables_command Command.delete_rule_spec('POSTROUTING', [Parameter.jump("#{$config[:iptables_chain_name]}_POST")], 'nat')
 
-    puts "Flush chain #{$config[:iptables_chain_name]}..."
+    puts "Flush chain #{$config[:iptables_chain_name]}_PRE..."
 
-    execute_iptables_command Command.flush_chain($config[:iptables_chain_name], 'nat')
+    execute_iptables_command Command.flush_chain("#{$config[:iptables_chain_name]}_PRE", 'nat')
 
-    puts "Deleting chain #{$config[:iptables_chain_name]} from nat table..."
+    puts "Flush chain #{$config[:iptables_chain_name]}_POST..."
 
-    execute_iptables_command Command.delete_chain($config[:iptables_chain_name], 'nat')
+    execute_iptables_command Command.flush_chain("#{$config[:iptables_chain_name]}_POST", 'nat')
+
+    puts "Deleting chain #{$config[:iptables_chain_name]}_PRE from nat table..."
+
+    execute_iptables_command Command.delete_chain("#{$config[:iptables_chain_name]}_PRE", 'nat')
+
+    puts "Deleting chain #{$config[:iptables_chain_name]}_POST from nat table..."
+
+    execute_iptables_command Command.delete_chain("#{$config[:iptables_chain_name]}_POST", 'nat')
 
     EventMachine.stop
   end
