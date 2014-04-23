@@ -69,7 +69,7 @@ class Iptables
   end
 
   def exists_nat_ip?(public_ip, private_ip)
-    output = execute_command "#{$iptables_bin_path} -t nat -n -v -L #{@chain_name} | #{$awk_bin_path} '{print $9, $10}' | #{$grep_bin_path} -i '^#{public_ip}' to:#{private_ip}"
+    output = execute_command "#{$iptables_bin_path} -t nat -n -v -L #{@chain_name} | #{$awk_bin_path} '{print $9, $10}' | #{$grep_bin_path} -i '^#{public_ip} to:#{private_ip}'"
     output.empty?
   end
 
