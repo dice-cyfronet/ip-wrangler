@@ -2,12 +2,18 @@
 
 In polish __Portostawiaczka__
 
-## Installation
+## Installation and run
 
     $ bundle install
     $ cp config.yml.sample config.yml
     ... edit config.yml
     $ screen -dmS portostawiaczka ./run.sh
+
+## Installation and run (with Rake)
+
+    $ rake
+    ... answer for questions
+    $ rake run
 
 ## API
 

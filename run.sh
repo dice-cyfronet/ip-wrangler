@@ -23,4 +23,6 @@ while getopts 'i:p:t:' __FLAG; do
   esac
 done
 
-thin -a ${__IP} -p ${__PORT} -R ${__DIR}/config.ru --tag ${__TAG} start
+pushd ${__DIR}/src/
+thin -a ${__IP} -p ${__PORT} -R ./config.ru --tag ${__TAG} start
+popd
