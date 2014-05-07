@@ -7,6 +7,10 @@ task :gem do
 end
 
 task :configure do
+  STDOUT.puts 'Username '
+  username = STDIN.gets
+  STDOUT.puts 'Password'
+  password = STDIN.gets
   STDOUT.puts 'Public IP address used for NAT port '
   port_ip = STDIN.gets
   STDOUT.puts 'Begin of available port for NAT '
@@ -28,6 +32,9 @@ task :configure do
   config_file.write(":log_file_path: log/ipt_wr_app.log\n")
   config_file.write(":db_name: ipt.db\n")
   
+  config_file.write(":username: #{username}")
+  config_file.write(":password: #{password}")
+  
   config_file.write(":iptables_chain_name: IPT_WR\n")
   
   config_file.write(":port_ip: #{port_ip}")
@@ -45,5 +52,9 @@ task :clean do
 end
 
 task :run do
-    sh 'screen -dmS portostawiaczka ./run.sh'
+  sh 'screen -dmS portostawiaczka ./run.sh'
+end
+
+task :rundevel do
+  sh 'screen -mS portostawiaczka ./devel-run.sh'
 end

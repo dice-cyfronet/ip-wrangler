@@ -1,5 +1,9 @@
 $config = YAML.load_file('config.yml')
 
+use Rack::Auth::Basic, 'Restricted Area' do |username, password|
+  [username, password] == [$config[:username], $config[:password]]
+end
+
 if File.exist?($config[:log_file_path])
   File.delete($config[:log_file_path])
 end
