@@ -24,5 +24,5 @@ while getopts 'i:p:t:' __FLAG; do
 done
 
 pushd ${__DIR}/src/
-thin -a ${__IP} -p ${__PORT} -R ./config.ru --tag ${__TAG} start
+thin -d -a ${__IP} -p ${__PORT} -R ./config.ru --tag ${__TAG} start
 popd
