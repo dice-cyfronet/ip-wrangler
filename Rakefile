@@ -57,9 +57,9 @@ task :clean do
 end
 
 task :run do
-  sh 'screen -dmS portostawiaczka ./run.sh'
+  sh './run.sh'
 end
 
 task :rundevel do
-  sh 'screen -mS portostawiaczka ./devel-run.sh'
+  sh './devel-run.sh'
 end
