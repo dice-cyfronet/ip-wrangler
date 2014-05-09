@@ -2,7 +2,7 @@
 
 set -x
 
-export __IP="192.168.122.94"
+export __IP="127.0.0.1"
 export __PORT=8400
 
 for __port in `seq 1024 1028`; do
