@@ -32,18 +32,23 @@ class Iptables
   def append_nat_port(public_ip, public_port, private_ip, private_port, protocol)
     rule = rule_nat_port public_ip, public_port, private_ip, private_port, protocol
 
-    command = Command.append_rule "#{@chain_name}_PRE", 'nat', rule
-
-    execute command
+    execute Command.check_rule "#{@chain_name}_PRE", 'nat', rule
+    if $?.exitstatus == 1
+      execute Command.append_rule "#{@chain_name}_PRE", 'nat', rule
+    end
   end
 
   def append_nat_ip(public_ip, private_ip)
     rule_dnat, rule_snat = rule_nat_ip public_ip, private_ip
 
-    command_dnat = Command.append_rule "#{@chain_name}_PRE", 'nat', rule_dnat
-    command_snat = Command.append_rule "#{@chain_name}_POST", 'nat', rule_snat
-
-    execute command_dnat, command_snat
+    execute Command.check_rule "#{@chain_name}_PRE", 'nat', rule_dnat
+    if $?.exitstatus == 1
+      execute Command.append_rule "#{@chain_name}_PRE", 'nat', rule_dnat
+    end
+    execute Command.check_rule "#{@chain_name}_POST", 'nat', rule_snat
+    if $?.exitstatus == 1
+      execute Command.append_rule "#{@chain_name}_POST", 'nat', rule_snat
+    end
   end
 
   def delete_nat_port(public_ip, public_port, private_ip, private_port, protocol)
