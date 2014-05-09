@@ -48,7 +48,12 @@ task :configure do
 end
 
 task :clean do
-  # nothing to do
+  sh '/sbin/iptables -w -t nat --delete PREROUTING --jump IPT_WR_PRE'
+  sh '/sbin/iptables -w -t nat --delete POSTROUTING --jump IPT_WR_POST'
+  sh '/sbin/iptables -w -t nat --flush IPT_WR_PRE'
+  sh '/sbin/iptables -w -t nat --flush IPT_WR_POST'
+  sh '/sbin/iptables -w -t nat --delete-chain IPT_WR_PRE'
+  sh '/sbin/iptables -w -t nat --delete-chain IPT_WR_POST'
 end
 
 task :run do
