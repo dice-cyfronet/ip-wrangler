@@ -49,8 +49,12 @@ task :configure do
   end
 end
 
-task :clean do
+task :clean => [:stop] do
   sh './clean.sh'
+end
+
+task :purge => [:clean] do
+  sh './purge.sh'
 end
 
 task :run do
