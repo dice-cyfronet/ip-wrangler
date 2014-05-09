@@ -68,28 +68,22 @@ end
 db.disconnect
 
 puts "Creating chain #{$config[:iptables_chain_name]}_PRE in nat table..."
-
 execute_iptables_command Command.new_chain("#{$config[:iptables_chain_name]}_PRE", 'nat')
 
 puts "Creating chain #{$config[:iptables_chain_name]}_POST in nat table..."
-
 execute_iptables_command Command.new_chain("#{$config[:iptables_chain_name]}_POST", 'nat')
 
-puts "Flush (if any rule exist) chain #{$config[:iptables_chain_name]}_PRE..."
+puts 'Appending rule, if not exists, to PREROUTING chain...'
+execute_iptables_command Command.check_rule('PREROUTING', 'nat', [Parameter.jump("#{$config[:iptables_chain_name]}_PRE")])
+if $?.exitstatus == 1
+  execute_iptables_command Command.append_rule('PREROUTING', 'nat', [Parameter.jump("#{$config[:iptables_chain_name]}_PRE")])
+end
 
-execute_iptables_command Command.flush_chain("#{$config[:iptables_chain_name]}_PRE", 'nat')
-
-puts "Flush (if any rule exist) chain #{$config[:iptables_chain_name]}_POST..."
-
-execute_iptables_command Command.flush_chain("#{$config[:iptables_chain_name]}_POST", 'nat')
-
-puts 'Appending rule to PREROUTING chain...'
-
-execute_iptables_command Command.append_rule('PREROUTING', 'nat', [Parameter.jump("#{$config[:iptables_chain_name]}_PRE")])
-
-puts 'Appending rule to POSTROUTING chain...'
-
-execute_iptables_command Command.append_rule('POSTROUTING', 'nat', [Parameter.jump("#{$config[:iptables_chain_name]}_POST")])
+puts 'Appending rule, if not exists, to POSTROUTING chain...'
+execute_iptables_command Command.check_rule('POSTROUTING', 'nat', [Parameter.jump("#{$config[:iptables_chain_name]}_POST")])
+if $?.exitstatus == 1
+  execute_iptables_command Command.append_rule('POSTROUTING', 'nat', [Parameter.jump("#{$config[:iptables_chain_name]}_POST")])
+end
 
 Bundler.require
 
@@ -103,35 +97,3 @@ use Rack::MethodOverride
 disable :run, :reload
 
 run Sinatra::Application
-
-EventMachine.schedule do
-  trap('INT') do
-    puts 'Killing app...'
-
-    puts 'Deleting rule from PREROUTING chain...'
-
-    execute_iptables_command Command.delete_rule_spec('PREROUTING', [Parameter.jump("#{$config[:iptables_chain_name]}_PRE")], 'nat')
-
-    puts 'Deleting rule from POSTROUTING chain...'
-
-    execute_iptables_command Command.delete_rule_spec('POSTROUTING', [Parameter.jump("#{$config[:iptables_chain_name]}_POST")], 'nat')
-
-    puts "Flush chain #{$config[:iptables_chain_name]}_PRE..."
-
-    execute_iptables_command Command.flush_chain("#{$config[:iptables_chain_name]}_PRE", 'nat')
-
-    puts "Flush chain #{$config[:iptables_chain_name]}_POST..."
-
-    execute_iptables_command Command.flush_chain("#{$config[:iptables_chain_name]}_POST", 'nat')
-
-    puts "Deleting chain #{$config[:iptables_chain_name]}_PRE from nat table..."
-
-    execute_iptables_command Command.delete_chain("#{$config[:iptables_chain_name]}_PRE", 'nat')
-
-    puts "Deleting chain #{$config[:iptables_chain_name]}_POST from nat table..."
-
-    execute_iptables_command Command.delete_chain("#{$config[:iptables_chain_name]}_POST", 'nat')
-
-    EventMachine.stop
-  end
-end
