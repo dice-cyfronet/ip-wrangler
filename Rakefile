@@ -62,6 +62,10 @@ task :run do
   sh './run.sh'
 end
 
+task :stop do
+  sh './stop.sh'
+end
+
 task :rundevel do
   sh './devel-run.sh'
 end
