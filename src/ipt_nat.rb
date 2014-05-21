@@ -57,7 +57,8 @@ class NAT
     public_ip, public_port = find_port private_ip, private_port, protocol
     @db.insert_nat_port public_ip, public_port, private_ip, private_port, protocol
     @iptables.append_nat_port public_ip, public_port, private_ip, private_port, protocol
-    {:public_ip => public_ip, :public_port => public_port, :protocol => protocol}
+    {:public_ip => public_ip, :public_port => public_port, :protocol => protocol,
+     :privPort => private_port, :pubIp => public_ip, :pubPort => public_port}
   end
 
   def lock_ip(private_ip)
