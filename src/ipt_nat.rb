@@ -63,7 +63,7 @@ class NAT
         :privPort => private_port, :pubIp => public_ip, :pubPort => public_port}
     else
       # FIXME(paoolo) move this to ipt_main.rb
-      port.to_json
+      port.map { |nat_port| nat_port }.to_json
     end
   end
 
@@ -76,7 +76,7 @@ class NAT
       {:public_ip => public_ip}
     else
       # FIXME(paoolo) move this to ipt_main.rb
-      ip.to_json
+      ip.map { |nat_port| nat_port }.to_json
     end
   end
 
