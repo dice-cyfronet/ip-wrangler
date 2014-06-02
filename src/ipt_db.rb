@@ -38,12 +38,12 @@ class DB
     @logger.info "Delete nat ip entry: #{public_ip}"
   end
 
-  def exists_nat_port?(public_ip, public_port, protocol, private_ip, private_port)
+  def not_exists_nat_port?(public_ip, public_port, protocol, private_ip, private_port)
     @db[:nat_ports].where(:public_ip => public_ip, :public_port => public_port,
                           :private_ip => private_ip, :private_port => private_port, :protocol => protocol).empty?
   end
 
-  def exists_nat_ip?(public_ip, private_ip)
+  def not_exists_nat_ip?(public_ip, private_ip)
     @db[:nat_ips].where(:public_ip => public_ip, :private_ip => private_ip).empty?
   end
 

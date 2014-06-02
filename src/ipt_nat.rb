@@ -16,29 +16,29 @@ class NAT
     end
   end
 
-  def used_port?(public_ip, public_port, protocol)
+  def not_used_port?(public_ip, public_port, protocol)
     `#{$lsof_bin_path} -i #{protocol}@#{public_ip}:#{public_port}`.empty?
   end
 
-  def used_ip?(public_ip)
+  def not_used_ip?(public_ip)
     `#{$lsof_bin_path} -i @#{public_ip}`.empty?
   end
 
   def find_port(private_ip, private_port, protocol)
     10.times do
       public_port = rand(@config[:port_stop] - @config[:port_start]) + @config[:port_start]
-      return @config[:port_ip], public_port if not used_port? @config[:port_ip], public_port, protocol and
-        not @iptables.exists_nat_port? @config[:port_ip], public_port, protocol, private_ip, private_port
+      return @config[:port_ip], public_port if not_used_port? @config[:port_ip], public_port, protocol and
+        @iptables.not_exists_nat_port? @config[:port_ip], public_port, protocol, private_ip, private_port
     end
     (@config[:port_start]..@config[:port_stop]).each do |public_port|
-      return @config[:port_ip], public_port unless @db.exists_nat_port? @config[:port_ip], public_port, protocol, private_ip, private_port
+      return @config[:port_ip], public_port unless @db.not_exists_nat_port? @config[:port_ip], public_port, protocol, private_ip, private_port
     end
   end
 
   def find_ip(private_ip)
     10.times do
       public_ip = @config[:ip].shuffle.sample
-      return public_ip if used_ip? public_ip and @iptables.exists_nat_ip? public_ip, private_ip
+      return public_ip if not_used_ip? public_ip and @iptables.not_exists_nat_ip? public_ip, private_ip
     end
     @config[:ip].each do |public_ip|
       return public_ip unless @db.exists_nat_ip? public_ip, private_ip
