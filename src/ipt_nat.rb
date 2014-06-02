@@ -62,15 +62,20 @@ class NAT
       {:public_ip => public_ip, :public_port => public_port, :protocol => protocol,
         :privPort => private_port, :pubIp => public_ip, :pubPort => public_port}
     else
-      port[0]
+      port
     end
   end
 
   def lock_ip(private_ip)
-    public_ip = find_ip private_ip
-    @db.insert_nat_ip public_ip, private_ip
-    @iptables.append_nat_ip public_ip, private_ip
-    {:public_ip => public_ip}
+    ip = @db.select_nat_ip private_ip
+    if ip.empty?
+      public_ip = find_ip private_ip
+      @db.insert_nat_ip public_ip, private_ip
+      @iptables.append_nat_ip public_ip, private_ip
+      {:public_ip => public_ip}
+    else
+      ip
+    end
   end
 
   def release_port(private_ip, private_port=nil, protocol=nil)
