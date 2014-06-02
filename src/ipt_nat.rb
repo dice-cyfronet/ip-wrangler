@@ -41,7 +41,7 @@ class NAT
       return public_ip if not_used_ip? public_ip and @iptables.not_exists_nat_ip? public_ip, private_ip
     end
     @config[:ip].each do |public_ip|
-      return public_ip unless @db.exists_nat_ip? public_ip, private_ip
+      return public_ip unless @db.not_exists_nat_ip? public_ip, private_ip
     end
   end
 
