@@ -28,7 +28,7 @@ class NAT
     10.times do
       public_port = rand(@config[:port_stop] - @config[:port_start]) + @config[:port_start]
       return @config[:port_ip], public_port if used_port? @config[:port_ip], public_port, protocol and
-          @iptables.exists_nat_port? @config[:port_ip], public_port, protocol, private_ip, private_port
+        @iptables.exists_nat_port? @config[:port_ip], public_port, protocol, private_ip, private_port
     end
     (@config[:port_start]..@config[:port_stop]).each do |public_port|
       return @config[:port_ip], public_port unless @db.exists_nat_port? @config[:port_ip], public_port, protocol, private_ip, private_port
@@ -54,11 +54,16 @@ class NAT
   end
 
   def lock_port(private_ip, private_port, protocol)
-    public_ip, public_port = find_port private_ip, private_port, protocol
-    @db.insert_nat_port public_ip, public_port, private_ip, private_port, protocol
-    @iptables.append_nat_port public_ip, public_port, private_ip, private_port, protocol
-    {:public_ip => public_ip, :public_port => public_port, :protocol => protocol,
-     :privPort => private_port, :pubIp => public_ip, :pubPort => public_port}
+    port = @db.select_nat_port private_ip, private_port, protocol
+    if port.empty?
+      public_ip, public_port = find_port private_ip, private_port, protocol
+      @db.insert_nat_port public_ip, public_port, private_ip, private_port, protocol
+      @iptables.append_nat_port public_ip, public_port, private_ip, private_port, protocol
+      {:public_ip => public_ip, :public_port => public_port, :protocol => protocol,
+        :privPort => private_port, :pubIp => public_ip, :pubPort => public_port}
+    else
+      port[0]
+    end
   end
 
   def lock_ip(private_ip)
