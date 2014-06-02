@@ -62,7 +62,8 @@ class NAT
       {:public_ip => public_ip, :public_port => public_port, :protocol => protocol,
         :privPort => private_port, :pubIp => public_ip, :pubPort => public_port}
     else
-      port
+      # FIXME(paoolo) move this to ipt_main.rb
+      port.to_json
     end
   end
 
@@ -74,7 +75,8 @@ class NAT
       @iptables.append_nat_ip public_ip, private_ip
       {:public_ip => public_ip}
     else
-      ip
+      # FIXME(paoolo) move this to ipt_main.rb
+      ip.to_json
     end
   end
 
