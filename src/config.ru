@@ -29,18 +29,18 @@ unless File.file?('config.yml')
   exit(1)
 end
 
-$config = YAML.load_file('config.yml')
+config = YAML.load_file('config.yml')
 
-puts "Checking if #{$config[:db_name]} is existing..."
+puts "Checking if #{config[:db_name]} is existing..."
 
-unless File.file?($config[:db_name])
-  puts "Create #{$config[:db_name]}"
-  FileUtils.touch($config[:db_name])
+unless File.file?(config[:db_name])
+  puts "Create #{config[:db_name]}"
+  FileUtils.touch(config[:db_name])
 end
 
 puts 'Checking database...'
 
-db = Sequel.connect('sqlite://' + $config[:db_name])
+db = Sequel.connect('sqlite://' + config[:db_name])
 
 unless db.table_exists? :nat_ports
   puts 'No nat_ports table. Creating it...'
@@ -53,6 +53,15 @@ unless db.table_exists? :nat_ports
     Int :private_port
     String :protocol
   end
+
+  (config[:port_start]..config[:port_stop]).each do |public_port|
+    db[:nat_ports].insert(:public_ip => config[:port_ip], :public_port => public_port,
+                          :private_ip => nil, :private_port => nil, :protocol => 'tcp')
+    puts "Add tcp/#{public_port}"
+    db[:nat_ports].insert(:public_ip => config[:port_ip], :public_port => public_port,
+                          :private_ip => nil, :private_port => nil, :protocol => 'udp')
+    puts "Add udp/#{public_port}"
+  end
 end
 
 unless db.table_exists? :nat_ips
@@ -63,26 +72,31 @@ unless db.table_exists? :nat_ips
     String :public_ip
     String :private_ip
   end
+
+  config[:ip].each do |public_ip|
+    db[:nat_ips].insert(:public_ip => public_ip, :private_ip => nil)
+    puts "Add ip:#{public_ip}"
+  end
 end
 
 db.disconnect
 
-puts "Creating chain #{$config[:iptables_chain_name]}_PRE in nat table..."
-execute_iptables_command Command.new_chain("#{$config[:iptables_chain_name]}_PRE", 'nat')
+puts "Creating chain #{config[:iptables_chain_name]}_PRE in nat table..."
+execute_iptables_command Command.new_chain("#{config[:iptables_chain_name]}_PRE", 'nat')
 
-puts "Creating chain #{$config[:iptables_chain_name]}_POST in nat table..."
-execute_iptables_command Command.new_chain("#{$config[:iptables_chain_name]}_POST", 'nat')
+puts "Creating chain #{config[:iptables_chain_name]}_POST in nat table..."
+execute_iptables_command Command.new_chain("#{config[:iptables_chain_name]}_POST", 'nat')
 
 puts 'Appending rule, if not exists, to PREROUTING chain...'
-execute_iptables_command Command.check_rule('PREROUTING', 'nat', [Parameter.jump("#{$config[:iptables_chain_name]}_PRE")])
+execute_iptables_command Command.check_rule('PREROUTING', 'nat', [Parameter.jump("#{config[:iptables_chain_name]}_PRE")])
 if $?.exitstatus == 1
-  execute_iptables_command Command.append_rule('PREROUTING', 'nat', [Parameter.jump("#{$config[:iptables_chain_name]}_PRE")])
+  execute_iptables_command Command.append_rule('PREROUTING', 'nat', [Parameter.jump("#{config[:iptables_chain_name]}_PRE")])
 end
 
 puts 'Appending rule, if not exists, to POSTROUTING chain...'
-execute_iptables_command Command.check_rule('POSTROUTING', 'nat', [Parameter.jump("#{$config[:iptables_chain_name]}_POST")])
+execute_iptables_command Command.check_rule('POSTROUTING', 'nat', [Parameter.jump("#{config[:iptables_chain_name]}_POST")])
 if $?.exitstatus == 1
-  execute_iptables_command Command.append_rule('POSTROUTING', 'nat', [Parameter.jump("#{$config[:iptables_chain_name]}_POST")])
+  execute_iptables_command Command.append_rule('POSTROUTING', 'nat', [Parameter.jump("#{config[:iptables_chain_name]}_POST")])
 end
 
 Bundler.require

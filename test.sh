@@ -22,7 +22,7 @@ done
 read
 
 for __id in `seq 1 3`; do
-    curl -u test:test -X POST --data "" http://${__IP}:${__PORT}/nat/ip/127.0.0.1
+    curl -u test:test -X POST --data "" http://${__IP}:${__PORT}/nat/ip/127.0.1.${__id}
     echo ""
 done
 
@@ -34,8 +34,6 @@ curl -u test:test http://${__IP}:${__PORT}/nat/port/127.0.0.1
 echo ""
 
 curl -u test:test http://${__IP}:${__PORT}/nat/ip
-echo ""
-curl -u test:test http://${__IP}:${__PORT}/nat/ip/127.0.0.1
 echo ""
 
 read
@@ -60,13 +58,13 @@ curl -u test:test -X DELETE --data "" http://${__IP}:${__PORT}/nat/port/127.0.0.
 echo ""
 
 for __id in `seq 1 2`; do
-    curl -u test:test -X DELETE --data "" http://${__IP}:${__PORT}/nat/ip/127.0.0.1/10.0.0.${__id}
+    curl -u test:test -X DELETE --data "" http://${__IP}:${__PORT}/nat/ip/127.0.1.${__id}
     echo ""
 done
 
 read
 
-curl -u test:test -X DELETE --data "" http://${__IP}:${__PORT}/nat/ip/127.0.0.3
+curl -u test:test -X DELETE --data "" http://${__IP}:${__PORT}/nat/ip/127.0.1.3
 echo ""
 
 read

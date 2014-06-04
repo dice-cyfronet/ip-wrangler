@@ -25,12 +25,9 @@ class NAT
   end
 
   def find_port(private_ip, private_port, protocol)
-    10.times do
-      public_port = rand(@config[:port_stop] - @config[:port_start]) + @config[:port_start]
-      return @config[:port_ip], public_port if not_used_port? @config[:port_ip], public_port, protocol and
-        @iptables.not_exists_nat_port? @config[:port_ip], public_port, protocol, private_ip, private_port
-    end
-    (@config[:port_start]..@config[:port_stop]).each do |public_port|
+    port = @db.get_first_empty_nat_port
+    if port != nil
+      public_port = port[:public_port]
       return @config[:port_ip], public_port if not_used_port? @config[:port_ip], public_port, protocol and
         @iptables.not_exists_nat_port? @config[:port_ip], public_port, protocol, private_ip, private_port
     end
@@ -38,14 +35,10 @@ class NAT
   end
 
   def find_ip(private_ip)
-    if @config[:ip] != nil
-      10.times do
-        public_ip = @config[:ip].shuffle.sample
-        return public_ip if not_used_ip? public_ip and @iptables.not_exists_nat_ip? public_ip, private_ip
-      end
-      @config[:ip].each do |public_ip|
-        return public_ip if not_used_ip? public_ip and @iptables.not_exists_nat_ip? public_ip, private_ip
-      end
+    ip = @db.get_first_empty_nat_ip
+    if ip != nil
+      public_ip = ip[:public_ip]
+      return public_ip if not_used_ip? public_ip and @iptables.not_exists_nat_ip? public_ip, private_ip
     end
     nil
   end
@@ -69,8 +62,7 @@ class NAT
           :privPort => private_port, :pubIp => public_ip, :pubPort => public_port}
       end
     else
-      port = port.to_a
-      port = port[0]
+      port = port.to_a[0]
       {:public_ip => port[:public_ip], :public_port => port[:public_port], :protocol => port[:protocol],
         :privPort => port[:private_port], :pubIp => port[:public_ip], :pubPort => port[:public_port]}
     end
@@ -86,7 +78,8 @@ class NAT
         {:public_ip => public_ip}
       end
     else
-      {:public_ip => port[:public_ip]}
+      ip = ip.to_a[0]
+      {:public_ip => ip[:public_ip]}
     end
   end
 
