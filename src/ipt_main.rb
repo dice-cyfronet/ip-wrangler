@@ -249,7 +249,10 @@ post '/dnat/*' do |ip|
     if valid_ip? ip
       data.each do |dpp|
         if valid_port? dpp['port'] and valid_protocol? dpp['proto']
-          redirects.push $nat.lock_port ip, dpp['port'], dpp['proto']
+          redir = $nat.lock_port ip, dpp['port'], dpp['proto']
+          if redir != nil
+            redirects.push redir
+          end
         end
       end
 
