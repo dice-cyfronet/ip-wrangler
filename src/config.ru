@@ -73,9 +73,11 @@ unless db.table_exists? :nat_ips
     String :private_ip
   end
 
-  config[:ip].each do |public_ip|
-    db[:nat_ips].insert(:public_ip => public_ip, :private_ip => nil)
-    puts "Add ip:#{public_ip}"
+  if config[:ip] != nil
+    config[:ip].each do |public_ip|
+      db[:nat_ips].insert(:public_ip => public_ip, :private_ip => nil)
+      puts "Add ip:#{public_ip}"
+    end
   end
 end
 
