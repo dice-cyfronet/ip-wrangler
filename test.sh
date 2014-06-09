@@ -3,12 +3,30 @@
 #set -x
 
 export __IP="127.0.0.1"
-#export __IP="***REMOVED***"
 export __PORT=8400
-#export __PORT=55000
 
-export __USER=cyfronet
-export __PASS=***REMOVED***
+export __USER=test
+export __PASS=test
+
+if (( "$#" >= "1" )); then
+    export __IP=$1
+fi
+
+if (( "$#" >= "2" )); then
+    export __PORT=$2
+fi
+
+if (( "$#" >= "3" )); then
+    export __USER=$3
+fi
+
+if (( "$#" >= "4" )); then
+    export __PASS=$4
+fi
+
+echo "${__IP} ${__PORT} ${__USER} ${__PASS}"
+
+read
 
 for __ip in `seq 1 3`; do
     for __port in `seq 1000 1010`; do
