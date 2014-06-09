@@ -17,12 +17,12 @@ class NAT
   end
 
   def not_used_port?(public_ip, public_port, protocol)
-    output = execute_command `#{$lsof_bin_path} -i #{protocol}@#{public_ip}:#{public_port}`
+    output = execute_command "#{$lsof_bin_path} -i #{protocol}@#{public_ip}:#{public_port}"
     output.empty?
   end
 
   def not_used_ip?(public_ip)
-    output = `#{$lsof_bin_path} -i @#{public_ip}`
+    output = "#{$lsof_bin_path} -i @#{public_ip}"
     output.empty?
   end
 
