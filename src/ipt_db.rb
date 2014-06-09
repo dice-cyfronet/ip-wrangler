@@ -55,8 +55,8 @@ class DB
     @logger.info "Delete nat ip entry: #{public_ip}"
   end
 
-  def get_first_empty_nat_port()
-    params = {:private_ip => nil, :private_port => nil}
+  def get_first_empty_nat_port(protocol)
+    params = {:private_ip => nil, :private_port => nil, :protocol => protocol}
     empty_nat_ports = @db[:nat_ports].where(params)
     if not empty_nat_ports.empty?
       return empty_nat_ports.to_a[0]

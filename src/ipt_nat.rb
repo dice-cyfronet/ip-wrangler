@@ -27,7 +27,7 @@ class NAT
   end
 
   def find_port(private_ip, private_port, protocol)
-    port = @db.get_first_empty_nat_port
+    port = @db.get_first_empty_nat_port protocol
     if port != nil
       public_port = port[:public_port]
       return @config[:port_ip], public_port if not_used_port? @config[:port_ip], public_port, protocol and
