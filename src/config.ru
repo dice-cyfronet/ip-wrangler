@@ -54,14 +54,11 @@ unless db.table_exists? :nat_ports
     String :protocol
   end
 
-  (config[:port_start]..config[:port_stop]).each do |public_port|
-    db[:nat_ports].insert(:public_ip => config[:port_ip], :public_port => public_port,
-                          :private_ip => nil, :private_port => nil, :protocol => 'tcp')
-    puts "Add tcp/#{public_port}"
-    db[:nat_ports].insert(:public_ip => config[:port_ip], :public_port => public_port,
-                          :private_ip => nil, :private_port => nil, :protocol => 'udp')
-    puts "Add udp/#{public_port}"
+  ['tcp', 'udp'].each do |protocol|
+    ports = (config[:port_start]..config[:port_stop]).map { |port| [config[:port_ip], port, nil, nil, protocol] }.to_a
+    db[:nat_ports].import([:public_ip, :public_port, :private_ip, :private_port, :protocol], ports)
   end
+
 end
 
 unless db.table_exists? :nat_ips
