@@ -54,7 +54,9 @@ unless db.table_exists? :nat_ports
     String :protocol
   end
 
-  ['tcp', 'udp'].each do |protocol|
+  db.create_index :nat_ports, [:public_ip, :public_port]
+
+  %w(tcp udp).each do |protocol|
     ports = (config[:port_start]..config[:port_stop]).map { |port| [config[:port_ip], port, nil, nil, protocol] }.to_a
     db[:nat_ports].import([:public_ip, :public_port, :private_ip, :private_port, :protocol], ports)
   end
@@ -69,6 +71,8 @@ unless db.table_exists? :nat_ips
     String :public_ip
     String :private_ip
   end
+
+  db.create_index :nat_ips, :public_ip
 
   if config[:ip] != nil
     config[:ip].each do |public_ip|
