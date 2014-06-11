@@ -2,18 +2,30 @@
 
 In polish __Portostawiaczka__
 
-## Installation and run
+## Requirements
 
-    $ bundle install
-    $ cp config.yml.sample config.yml
-    ... edit config.yml
-    $ screen -dmS portostawiaczka ./run.sh
+* `ruby` (recommended version ≥ 1.9)
+* `bundler`
+* `rake`
+* (maybe) `thin`
 
 ## Installation and run (with Rake)
 
     $ rake
     ... answer for questions
+    ... first time run
+    $ ./devel-run.sh
+    ... verify if everything is okey
+    ... next time run
+    $ ./run.sh
+    ... or
     $ rake run
+
+### Options for ./run.sh or ./devel-run.sh
+
+* `-i` - listen IP, default: `0.0.0.0`
+* `-p` - listen port, default: `8400`
+* `-t` - tag, default: `IptWr`
 
 ## API
 
