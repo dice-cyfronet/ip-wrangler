@@ -43,7 +43,11 @@ end
 # List any NAT port(s)
 get '/nat/port' do
   sandbox do
-    $nat.get_nat_ports.map { |nat_port| nat_port }.to_json
+    $nat.get_nat_ports.map { |nat_port|
+      puts nat_port[:public_ip]
+      nat_port[:public_ip] = $config[:ext_ip]
+      nat_port
+    }.to_json
   end
 end
 
@@ -51,7 +55,11 @@ end
 get '/nat/port/*' do |private_ip|
   sandbox do
     if valid_ip? private_ip
-      $nat.get_nat_ports(private_ip).map { |nat_port| nat_port }.to_json
+      $nat.get_nat_ports(private_ip).map { |nat_port|
+        puts nat_port[:public_ip]
+        nat_port[:public_ip] = $config[:ext_ip]
+        nat_port
+      }.to_json
     else
       500
     end
@@ -84,6 +92,7 @@ post '/nat/port/*/*/*' do |private_ip, private_port, protocol|
       public_ip_port = $nat.lock_port private_ip, private_port, protocol
 
       if public_ip_port != nil
+        public_ip_port[:public_ip] = $config[:ext_ip]
         public_ip_port.to_json
       else
         404
@@ -102,8 +111,25 @@ post '/nat/port/*/*' do |private_ip, private_port|
       public_ip_port_tcp = $nat.lock_port private_ip, private_port, 'tcp'
       public_ip_port_udp = $nat.lock_port private_ip, private_port, 'udp'
 
-      if public_ip_port_tcp != nil and public_ip_port_udp != nil
-        "[#{public_ip_port_tcp.to_json},#{public_ip_port_udp.to_json}]"
+      out = nil
+
+      if public_ip_port_tcp != nil
+        public_ip_port_tcp[:public_ip] = $config[:ext_ip]
+        out = "#{public_ip_port_tcp.to_json}"
+      end
+
+      if public_ip_port_udp != nil
+        public_ip_port_udp[:public_ip] = $config[:ext_ip]
+        if out != nil
+          out += ",#{public_ip_port_udp.to_json}"
+        else
+          out = "#{public_ip_port_udp.to_json}"
+        end
+      end
+
+      if out != nil
+        out = "[#{out}]"
+        out
       else
         404
       end
@@ -225,14 +251,26 @@ end
 
 get '/dnat' do
   sandbox do
-    $nat.get_nat_ports.map { |nat_port| nat_port }.to_json
+    $nat.get_nat_ports.map { |nat_port|
+      nat_port[:public_ip] = $config[:ext_ip]
+      nat_port[:privPort] = nat_port[:private_port]
+      nat_port[:pubIp] = nat_port[:public_ip]
+      nat_port[:pubPort] = nat_port[:public_port]
+      nat_port
+    }.to_json
   end
 end
 
 get '/dnat/*' do |ip|
   sandbox do
     if valid_ip? ip
-      $nat.get_nat_ports(ip).map { |nat_port| nat_port }.to_json
+      $nat.get_nat_ports(ip).map { |nat_port|
+        nat_port[:public_ip] = $config[:ext_ip]
+        nat_port[:privPort] = nat_port[:private_port]
+        nat_port[:pubIp] = nat_port[:public_ip]
+        nat_port[:pubPort] = nat_port[:public_port]
+        nat_port
+      }.to_json
     else
       500
     end
@@ -251,6 +289,10 @@ post '/dnat/*' do |ip|
         if valid_port? dpp['port'] and valid_protocol? dpp['proto']
           redir = $nat.lock_port ip, dpp['port'], dpp['proto']
           if redir != nil
+            redir[:public_ip] = $config[:ext_ip]
+            redir[:privPort] = redir[:private_port]
+            redir[:pubIp] = redir[:public_ip]
+            redir[:pubPort] = redir[:public_port]
             redirects.push redir
           end
         end

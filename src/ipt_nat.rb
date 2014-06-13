@@ -31,7 +31,7 @@ class NAT
     if port != nil
       public_port = port[:public_port]
       return @config[:port_ip], public_port if not_used_port? @config[:port_ip], public_port, protocol and
-        @iptables.not_exists_nat_port? @config[:port_ip], public_port, protocol, private_ip, private_port
+          @iptables.not_exists_nat_port? @config[:port_ip], public_port, protocol, private_ip, private_port
     end
     nil
   end
@@ -61,14 +61,12 @@ class NAT
         @db.insert_nat_port public_ip, public_port, private_ip, private_port, protocol
         @iptables.append_nat_port public_ip, public_port, private_ip, private_port, protocol
         {:public_ip => public_ip, :public_port => public_port, :protocol => protocol,
-          :private_ip => private_ip, :private_port => private_port,
-          :privPort => private_port, :pubIp => public_ip, :pubPort => public_port}
+         :private_ip => private_ip, :private_port => private_port}
       end
     else
       port = port.to_a[0]
       {:public_ip => port[:public_ip], :public_port => port[:public_port], :protocol => port[:protocol],
-        :private_ip => private_ip, :private_port => private_port,
-        :privPort => port[:private_port], :pubIp => port[:public_ip], :pubPort => port[:public_port]}
+       :private_ip => private_ip, :private_port => private_port}
     end
   end
 
@@ -76,16 +74,16 @@ class NAT
     ip = @db.select_nat_ip private_ip
     if ip.empty?
       public_ip = find_ip private_ip
-      if public_ip  != nil
+      if public_ip != nil
         @db.insert_nat_ip public_ip, private_ip
         @iptables.append_nat_ip public_ip, private_ip
         {:public_ip => public_ip,
-          :private_ip => private_ip}
+         :private_ip => private_ip}
       end
     else
       ip = ip.to_a[0]
       {:public_ip => ip[:public_ip],
-        :private_ip => private_ip}
+       :private_ip => private_ip}
     end
   end
 

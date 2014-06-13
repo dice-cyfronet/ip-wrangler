@@ -12,6 +12,8 @@ task :configure do
     username = STDIN.gets
     STDOUT.puts 'Password'
     password = STDIN.gets
+    STDOUT.puts 'External IP address user for NAT port'
+    ext_ip = STDIN.gets
     STDOUT.puts 'Public IP address used for NAT port '
     port_ip = STDIN.gets
     STDOUT.puts 'Begin of available port for NAT '
@@ -38,6 +40,7 @@ task :configure do
 
     config_file.write(":iptables_chain_name: IPT_WR\n")
 
+    config_file.write(":ext_ip: #{ext_ip}")
     config_file.write(":port_ip: #{port_ip}")
     config_file.write(":port_start: #{port_start}")
     config_file.write(":port_stop: #{port_stop}")

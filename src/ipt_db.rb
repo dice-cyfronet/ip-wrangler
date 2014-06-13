@@ -64,7 +64,7 @@ class DB
     nil
   end
   
-  def get_first_empty_nat_ip()
+  def get_first_empty_nat_ip
     params = {:private_ip => nil}
     empty_nat_ips = @db[:nat_ips].where(params)
     if not empty_nat_ips.empty?
