@@ -1,4 +1,4 @@
-$lsof_bin_path = '/usr/bin/lsof'
+$lsof_bin_path = '/usr/bin/sudo /usr/bin/lsof'
 
 class NAT
 

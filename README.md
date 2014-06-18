@@ -4,6 +4,7 @@ In polish __Portostawiaczka__
 
 ## Requirements
 
+* `sudo` (user running this wrangler need to have permission to run `/sbin/iptables` and `/usr/bin/lsof`)
 * `ruby` (recommended version ≥ 1.9)
 * `bundler`
 * `rake`

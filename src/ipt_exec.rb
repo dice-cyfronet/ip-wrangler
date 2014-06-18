@@ -1,4 +1,4 @@
-$iptables_bin_path = '/sbin/iptables'
+$iptables_bin_path = '/usr/bin/sudo /sbin/iptables'
 
 def execute_command(command)
   output = `#{command}`
