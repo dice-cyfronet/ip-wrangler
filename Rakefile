@@ -1,7 +1,3 @@
-task :default => :install
-
-task :install => [:gem, :configure]
-
 task :gem do
   sh 'bundle install'
 end
