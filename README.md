@@ -9,34 +9,59 @@ In polish __Portostawiaczka__
 * `bundler`
 * `rake`
 * `thin`
+* `libsqlite3-dev`
 
-You **need to** add following line `/etc/sudoers` (using command `visudo` as `root`), where
+## Usage
 
-* `host_name` is come from `/etc/hostname`
-* `user_name` is the name of user which use this software
+Following command execute as `root`.
+
+Install required packages:
+
+* using `apt-get`:
+
+    `root@host_name # apt-get install -y sudo ruby bundler rake thin libsqlite3-dev`
+
+* using `aptitude`:
+
+    `root@host_name # aptitude install -y sudo ruby bundler rake thin libsqlite3-dev`
+
+Create user which will be used to start `ipwrangler`:
+
+    root@host_name # adduser user_name
+    ... answer for questions
+    root@host_name # adduser ipwrangler sudo
+
+where:
+
+* `user_name` can be any name
+
+To enable `iptables` and `lsof` used by `ipwrangler`, modify `/etc/sudoers`:
+
+    root@host_name # visudo
+
+Add following line at bottom of file:
 
     user_name host_name= NOPASSWD: /sbin/iptables, /usr/bin/lsof
 
-## Installation
+where:
 
-It is required to have `libsqlite3-dev` (Ubuntu, Debian based Linux distribution). Install package, if you didn't:
+* `host_name` is come from `/etc/hostname`
+* `user_name` is the name of user which will be used to start `ipwrangler`
 
-    ... using apt-get
-    root@host_name # apt-get install -y libsqlite3-dev
-    ... using aptitude
-    root@host_name # aptitutde install libsqlite3-dev
+Following command execute as `user_name`.
 
-Download archive with sources or clone repository from `ps-master` branch:
+Download archive with sources or clone repository from `master` branch:
 
     ... download archive
-    user_name@host_name $ wget --no-check-certificate https://gitlab.dev.cyfronet.pl/atmosphere/ipt_wr/repository/archive.zip?ref=ps-master
+    user_name@host_name $ wget --no-check-certificate https://gitlab.dev.cyfronet.pl/atmosphere/ipt_wr/repository/archive.zip?ref=master
     ... clone repository
-    user_name@host_name $ GIT_SSL_NO_VERIFY=1 git clone -b ps-master https://gitlab.dev.cyfronet.pl/atmosphere/ipt_wr.git
+    user_name@host_name $ GIT_SSL_NO_VERIFY=1 git clone -b master https://gitlab.dev.cyfronet.pl/atmosphere/ipt_wr.git
 
 Install:
 
     ... execute command in root directory of project
-    user_name@host_name $ rake
+    user_name@host_name $ sudo rake gem
+    user_name@host_name $ rake configure
     ... answer for questions
 
 First time run, in foreground:
@@ -55,7 +80,18 @@ Stop:
     ... execute command in root directory of project
     user_name@host_name $ rake stop
 
-### Options for ./run.sh or ./devel-run.sh
+Clean rules from iptables:
+
+    ... execute command in root directory of project
+    user_name@host_name $ rake clean
+
+Purge database and settings:
+
+    ... execute command in root directory of project
+    user_name@host_name $ rake purge
+
+
+### Options for scripts `run.sh` or `devel-run.sh`:
 
 * `-i` - listen IP, default: `0.0.0.0`
 * `-p` - listen port, default: `8400`
