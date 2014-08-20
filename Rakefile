@@ -8,18 +8,18 @@ task :configure do
     username = STDIN.gets
     STDOUT.puts 'Password'
     password = STDIN.gets
-    STDOUT.puts 'External IP address user for NAT port'
+    STDOUT.puts 'External IP address user for NAT port (if your server is indicated by a different address than that assigned to the interface, enter it here) '
     ext_ip = STDIN.gets
-    STDOUT.puts 'Public IP address used for NAT port '
+    STDOUT.puts 'Public IP address used for NAT port (enter address which is assigned to the interface) '
     port_ip = STDIN.gets
     STDOUT.puts 'Begin of available port for NAT '
     port_start = STDIN.gets
     STDOUT.puts 'End of available port for NAT '
     port_stop = STDIN.gets
-    STDOUT.puts 'Count of public IP used for NAT ip '
+    STDOUT.puts 'Count of public IP used for NAT IP '
     ip_count = STDIN.gets
     ip_count = Integer(ip_count)
-    STDOUT.puts 'Public IP used for NAT ip (each line) '
+    STDOUT.puts 'Public IP used for NAT IP (one address per line, in format: x.x.x.x) '
     ip = []
     while ip_count > 0 do
       ip << STDIN.gets
@@ -49,21 +49,21 @@ task :configure do
 end
 
 task :clean => [:stop] do
-  sh './clean.sh'
+  sh 'bundle exec ./clean.sh'
 end
 
 task :purge => [:clean] do
-  sh './purge.sh'
+  sh 'bundle exec ./purge.sh'
 end
 
 task :run do
-  sh './run.sh'
+  sh 'bundle exec ./run.sh'
 end
 
 task :stop do
-  sh './stop.sh'
+  sh 'bundle exec ./stop.sh'
 end
 
 task :rundevel do
-  sh './devel-run.sh'
+  sh 'bundle exec ./devel-run.sh'
 end

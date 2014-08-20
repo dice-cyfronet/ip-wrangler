@@ -8,6 +8,7 @@ In polish __Portostawiaczka__
 * `lsof`
 * `sudo` (user which will be used to start `ipwrangler` needs to have permissions to run `/sbin/iptables` and `/usr/bin/lsof`)
 * `ruby` (recommended version ≥ 1.9)
+* `ruby-dev` with `g++`, `make`
 * `bundler`
 * `rake`
 * `thin`
@@ -21,11 +22,11 @@ Install required packages:
 
 Using `apt-get`:
 
-    root@host_name # apt-get install -y iptables lsof sudo ruby bundler rake thin libsqlite3-dev
+    root@host_name # apt-get install -y iptables lsof sudo ruby ruby-dev bundler rake thin libsqlite3-dev g++ make
 
 Using `aptitude`:
 
-    root@host_name # aptitude install -y iptables lsof sudo ruby bundler rake thin libsqlite3-dev
+    root@host_name # aptitude install -y iptables lsof sudo ruby ruby-dev bundler rake thin libsqlite3-dev g++ make
 
 Create user which will be used to start `ipwrangler`:
 
@@ -68,7 +69,7 @@ Following command execute as `user_name` in root directory of project.
 
 Install required bundles:
 
-    user_name@host_name $ sudo rake gem
+    user_name@host_name $ rake gem
 
 Configure `ipwrangler`:
 
