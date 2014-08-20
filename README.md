@@ -144,6 +144,8 @@ Listing:
 Creating:
 
 * `POST /dnat/<private_ip>` - create NAT port for specified IP, request body should be in format
+
+`
     [
         {
             "port": 21,
@@ -154,6 +156,7 @@ Creating:
             "proto": udp
         }
     ]
+`
 
 Deleting:
 
