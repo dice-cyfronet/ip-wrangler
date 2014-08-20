@@ -97,12 +97,6 @@ Purge `ipwrangler` database and settings:
 
     user_name@host_name $ rake purge
 
-### Options for scripts `run.sh` or `devel-run.sh`:
-
-* `-i` - listen IP, default: `0.0.0.0`
-* `-p` - listen port, default: `8400`
-* `-t` - tag, default: `IptWr`
-
 ## API
 
 ### Port
