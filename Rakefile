@@ -1,5 +1,5 @@
 task :gem do
-  sh 'bundle install'
+  sh 'bundle install --production'
 end
 
 task :configure do
