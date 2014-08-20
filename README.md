@@ -4,23 +4,56 @@ In polish __Portostawiaczka__
 
 ## Requirements
 
-* `sudo` (user running this wrangler need to have permission to run `/sbin/iptables` and `/usr/bin/lsof`)
+* `sudo` (user running this wrangler need to have permission to run `/sbin/iptables` and `/usr/bin/lsof`, see below)
 * `ruby` (recommended version ≥ 1.9)
 * `bundler`
 * `rake`
-* (maybe) `thin`
+* `thin`
 
-## Installation and run (with Rake)
+You **need to** add following line `/etc/sudoers` (using command `visudo` as `root`), where
 
-    $ rake
+* `host_name` is come from `/etc/hostname`
+* `user_name` is the name of user which use this software
+
+    user_name host_name= NOPASSWD: /sbin/iptables, /usr/bin/lsof
+
+## Installation
+
+It is required to have `libsqlite3-dev` (Ubuntu, Debian based Linux distribution). Install package, if you didn't:
+
+    ... using apt-get
+    root@host_name # apt-get install -y libsqlite3-dev
+    ... using aptitude
+    root@host_name # aptitutde install libsqlite3-dev
+
+Download archive with sources or clone repository from `ps-master` branch:
+
+    ... download archive
+    user_name@host_name $ wget --no-check-certificate https://gitlab.dev.cyfronet.pl/atmosphere/ipt_wr/repository/archive.zip?ref=ps-master
+    ... clone repository
+    user_name@host_name $ GIT_SSL_NO_VERIFY=1 git clone -b ps-master https://gitlab.dev.cyfronet.pl/atmosphere/ipt_wr.git
+
+Install:
+
+    ... execute command in root directory of project
+    user_name@host_name $ rake
     ... answer for questions
-    ... first time run
-    $ ./devel-run.sh
+
+First time run, in foreground:
+
+    ... execute command in root directory of project
+    user_name@host_name $ rake rundevel
     ... verify if everything is okey
-    ... next time run
-    $ ./run.sh
-    ... or
-    $ rake run
+
+Next time run, in background:
+
+    ... execute command in root directory of project
+    user_name@host_name $ rake run
+
+Stop:
+
+    ... execute command in root directory of project
+    user_name@host_name $ rake stop
 
 ### Options for ./run.sh or ./devel-run.sh
 
