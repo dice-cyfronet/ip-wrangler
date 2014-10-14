@@ -1,8 +1,11 @@
+*.db
+*.log
+config.yml
+
 .idea/
 *.ipr
 *.iws
 *.iml
-*.db
-*.log
-config.yml
-nbproject/
+
+/nbproject/private/
+/nbproject/
