@@ -1,3 +1,5 @@
+require "bundler/gem_tasks"
+
 task :gem do
   sh 'bundle install --deployment'
 end

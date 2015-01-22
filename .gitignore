@@ -12,3 +12,5 @@ config.yml
 
 /nbproject/private/
 /nbproject/
+
+*.gem

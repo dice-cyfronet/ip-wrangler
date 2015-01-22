@@ -1,5 +1,4 @@
 class DB
-
   def initialize(db_name, logger)
     @db = Sequel.connect('sqlite://' + db_name)
     @logger = logger
@@ -81,5 +80,4 @@ class DB
   def not_exists_nat_ip?(public_ip, private_ip)
     @db[:nat_ips].where(:public_ip => public_ip, :private_ip => private_ip).empty?
   end
-
 end
