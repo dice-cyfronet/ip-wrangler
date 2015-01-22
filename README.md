@@ -1,5 +1,7 @@
 # IP Wrangler
 
+[![Code Climate](https://codeclimate.com/github/dice-cyfronet/ip-wrangler/badges/gpa.svg)](https://codeclimate.com/github/dice-cyfronet/ip-wrangler)
+
 In polish __Portostawiaczka__
 
 ## Requirements
