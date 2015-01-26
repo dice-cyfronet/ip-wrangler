@@ -164,7 +164,7 @@ delete '/nat/port/*/*/*' do |private_ip, private_port, protocol|
       released_port = $nat.release_port private_ip, private_port, protocol
 
       if released_port.length > 0
-        [ 200, released_port.to_json ]
+        [200, released_port.to_json]
       else
         204
       end
@@ -182,7 +182,7 @@ delete '/nat/port/*/*' do |private_ip, private_port|
       released_port = $nat.release_port private_ip, private_port
 
       if released_port.length > 0
-        [ 200, released_port.to_json ]
+        [200, released_port.to_json]
       else
         204
       end
@@ -199,7 +199,7 @@ delete '/nat/port/*' do |private_ip|
       released_port = $nat.release_port private_ip
 
       if released_port.length > 0
-        [ 200, released_port.to_json ]
+        [200, released_port.to_json]
       else
         204
       end
@@ -216,7 +216,7 @@ delete '/nat/ip/*/*' do |private_ip, public_ip|
       released_ip = $nat.release_ip private_ip, public_ip
 
       if released_ip.length > 0
-        [ 200, released_port.to_json ]
+        [200, released_port.to_json]
       else
         204
       end
@@ -233,7 +233,7 @@ delete '/nat/ip/*' do |private_ip|
       released_ip = $nat.release_ip private_ip
 
       if released_ip.length > 0
-        [ 200, released_port.to_json ]
+        [200, released_port.to_json]
       else
         204
       end
@@ -316,7 +316,7 @@ delete '/dnat/*/*/*' do |ip, port, proto|
       released_port = $nat.release_port ip, port, proto
 
       if released_port.length > 0
-        [ 200, released_port.to_json ]
+        [200, released_port.to_json]
       else
         204
       end
@@ -333,7 +333,7 @@ delete '/dnat/*/*' do |ip, port|
       released_port = $nat.release_port ip, port
 
       if released_port.length > 0
-        [ 200, released_port.to_json ]
+        [200, released_port.to_json]
       else
         204
       end
@@ -349,7 +349,7 @@ delete '/dnat/*' do |ip|
       released_port = $nat.release_port ip
 
       if released_port.length > 0
-        [ 200, released_port.to_json ]
+        [200, released_port.to_json]
       else
         204
       end
