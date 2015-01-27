@@ -42,16 +42,16 @@ module IpWrangler
       ip = @db.get_first_empty_nat_ip
       if ip != nil
         public_ip = ip[:public_ip]
-        return public_ip if not_used_ip? public_ip and @iptables.not_exists_nat_ip? public_ip, private_ip
+        return public_ip if not_used_ip? public_ip && @iptables.not_exists_nat_ip? public_ip, private_ip
       end
       nil
     end
 
-    def get_nat_ports(private_ip=nil)
+    def get_nat_ports(private_ip = nil)
       @db.select_nat_port private_ip
     end
 
-    def get_nat_ips(private_ip=nil)
+    def get_nat_ips(private_ip = nil)
       @db.select_nat_ip private_ip
     end
 
@@ -59,7 +59,7 @@ module IpWrangler
       port = @db.select_nat_port private_ip, private_port, protocol
       if port.empty?
         public_ip, public_port = find_port private_ip, private_port, protocol
-        if public_ip != nil and public_port != nil
+        if public_ip != nil && public_port != nil
           @db.insert_nat_port public_ip, public_port, private_ip, private_port, protocol
           @iptables.append_nat_port public_ip, public_port, private_ip, private_port, protocol
           {:public_ip => public_ip, :public_port => public_port, :protocol => protocol,
@@ -89,7 +89,7 @@ module IpWrangler
       end
     end
 
-    def release_port(private_ip, private_port=nil, protocol=nil)
+    def release_port(private_ip, private_port = nil, protocol = nil)
       released_port = []
       @db.select_nat_port(private_ip, private_port, protocol).each do |nat_port|
         @iptables.delete_nat_port nat_port[:public_ip], nat_port[:public_port],
@@ -103,7 +103,7 @@ module IpWrangler
       released_port
     end
 
-    def release_ip(private_ip, public_ip=nil)
+    def release_ip(private_ip, public_ip = nil)
       released_ip = []
       @db.select_nat_ip(private_ip, public_ip).each do |nat_ip|
         @iptables.delete_nat_ip nat_ip[:public_ip], nat_ip[:private_ip]

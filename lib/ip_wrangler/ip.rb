@@ -13,7 +13,7 @@ module IpWrangler
     end
 
     def range_ips(start, stop)
-      if validate_ip(start) and validate_ip(stop)
+      if validate_ip(start) && validate_ip(stop)
         start = start.inject { |sum, octet| sum * 256 + octet }
         stop = stop.inject { |sum, octet| sum * 256 + octet }
 
@@ -27,7 +27,7 @@ module IpWrangler
     end
 
     def validate_port(port)
-      port > 0 and port < 65536
+      port > 0 && port < 65536
     end
 
     def range_ports(start, stop, ip, protocol)

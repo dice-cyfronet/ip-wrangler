@@ -179,7 +179,7 @@ module IpWrangler
         jump: '--jump',
     }
 
-    def initialize(name, value=nil)
+    def initialize(name, value = nil)
       @name, @value = name, value
     end
 

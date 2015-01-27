@@ -5,7 +5,7 @@ module IpWrangler
       @logger = logger
     end
 
-    def select_nat_port(private_ip=nil, private_port=nil, protocol=nil)
+    def select_nat_port(private_ip = nil, private_port = nil, protocol = nil)
       params = { private_ip: private_ip,
                  private_port: private_port,
                  protocol: protocol }.select do |_, value|
@@ -13,14 +13,14 @@ module IpWrangler
       end
       nat_ports = []
       @db[:nat_ports].where(params).each do |nat_port|
-        if nat_port[:private_port] != nil and nat_port[:private_port] != nil
+        if nat_port[:private_port] != nil && nat_port[:private_port] != nil
           nat_ports.push nat_port
         end
       end
       nat_ports
     end
 
-    def select_nat_ip(private_ip=nil, public_ip=nil)
+    def select_nat_ip(private_ip = nil, public_ip = nil)
       params = { private_ip: private_ip, public_ip: public_ip }.select do |_, value|
         !value.nil?
       end
@@ -50,7 +50,7 @@ module IpWrangler
       @logger.info "Insert nat ip entry: #{public_ip} -> #{private_ip}"
     end
 
-    def delete_nat_port(private_ip, private_port=nil, protocol=nil)
+    def delete_nat_port(private_ip, private_port = nil, protocol = nil)
       params = { private_ip: private_ip,
                  private_port: private_port,
                  protocol: protocol }.select do |_, value|
@@ -61,7 +61,7 @@ module IpWrangler
       @logger.info "Delete nat ip port entry: #{private_ip}/#{private_port} (#{protocol})"
     end
 
-    def delete_nat_ip(private_ip, public_ip=nil)
+    def delete_nat_ip(private_ip, public_ip = nil)
       params = { private_ip: private_ip,
                  public_ip: public_ip }.select do |_, value|
         !value.nil?

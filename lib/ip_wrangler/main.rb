@@ -103,7 +103,7 @@ end
 post '/nat/port/*/*/*' do |private_ip, private_port, protocol|
   sandbox do
     private_port = private_port.to_i
-    if valid_ip? private_ip and valid_port? private_port and valid_protocol? protocol
+    if valid_ip? private_ip && valid_port? private_port && valid_protocol? protocol
       public_ip_port = $nat.lock_port private_ip, private_port, protocol
 
       if public_ip_port != nil
@@ -122,7 +122,7 @@ end
 post '/nat/port/*/*' do |private_ip, private_port|
   sandbox do
     private_port = private_port.to_i
-    if valid_ip? private_ip and valid_port? private_port
+    if valid_ip? private_ip && valid_port? private_port
       public_ip_port_tcp = $nat.lock_port private_ip, private_port, 'tcp'
       public_ip_port_udp = $nat.lock_port private_ip, private_port, 'udp'
 
@@ -175,7 +175,7 @@ end
 delete '/nat/port/*/*/*' do |private_ip, private_port, protocol|
   sandbox do
     private_port = private_port.to_i
-    if valid_ip? private_ip and valid_port? private_port and valid_protocol? protocol
+    if valid_ip? private_ip && valid_port? private_port && valid_protocol? protocol
       release_port_and_check private_ip, private_port, protocol
     else
       500
@@ -187,7 +187,7 @@ end
 delete '/nat/port/*/*' do |private_ip, private_port|
   sandbox do
     private_port = private_port.to_i
-    if valid_ip? private_ip and valid_port? private_port
+    if valid_ip? private_ip && valid_port? private_port
       release_port_and_check private_ip, private_port
     else
       500
@@ -209,7 +209,7 @@ end
 # Delete NAT IP for specified IP
 delete '/nat/ip/*/*' do |private_ip, public_ip|
   sandbox do
-    if valid_ip? private_ip and valid_ip? public_ip
+    if valid_ip? private_ip && valid_ip? public_ip
       release_ip_and_check private_ip, public_ip
     else
       500
@@ -271,7 +271,7 @@ post '/dnat/*' do |ip|
 
     if valid_ip? ip
       data.each do |dpp|
-        if valid_port? dpp['port'] and valid_protocol? dpp['proto']
+        if valid_port? dpp['port'] && valid_protocol? dpp['proto']
           redir = $nat.lock_port ip, dpp['port'], dpp['proto']
           if redir != nil
             redir[:public_ip] = $config[:ext_ip]
@@ -297,7 +297,7 @@ end
 delete '/dnat/*/*/*' do |ip, port, proto|
   sandbox do
     port = port.to_i
-    if valid_ip? ip and valid_port? port and valid_protocol? proto
+    if valid_ip? ip && valid_port? port && valid_protocol? proto
       release_port_and_check ip, port, proto
     else
       500
@@ -308,7 +308,7 @@ end
 delete '/dnat/*/*' do |ip, port|
   sandbox do
     port = port.to_i
-    if valid_ip? ip and valid_port? port
+    if valid_ip? ip && valid_port? port
       release_port_and_check ip, port
     else
       500
