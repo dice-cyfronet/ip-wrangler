@@ -40,12 +40,12 @@ def valid_protocol?(protocol)
   protocol =~ /^(tcp|udp)$/i ? true : false
 end
 
-def release_ip_and_check(private_ip, public_ip=nil)
+def release_ip_and_check(private_ip, public_ip = nil)
   released_ip = $nat.release_ip private_ip, public_ip
   check_released_resource released_ip
 end
 
-def release_port_and_check(private_ip, private_port=nil, protocol=nil)
+def release_port_and_check(private_ip, private_port = nil, protocol = nil)
   released_port = $nat.release_port private_ip, private_port, protocol
   check_released_resource released_port
 end
