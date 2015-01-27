@@ -69,22 +69,24 @@ module IpWrangler
     end
 
     def not_exists_nat_port?(public_ip, public_port, protocol, private_ip, private_port)
-      output = execute_command "#{$iptables_bin_path} -t nat -n -v -L #{@chain_name}_PRE | "\
-                               "#{$awk_bin_path} '{print $9, $10, $11, $12}' | "\
-                               "#{$grep_bin_path} -i '^#{public_ip} #{protocol} dpt:#{public_port}'"
+      command = "#{$iptables_bin_path} -t nat -n -v -L #{@chain_name}_PRE | "\
+                "#{$awk_bin_path} '{print $9, $10, $11, $12}' | "\
+                "#{$grep_bin_path} -i '^#{public_ip} #{protocol} dpt:#{public_port}'"
+      output = IpWrangler::Exec.execute_command command
       output.empty?
     end
 
     def not_exists_nat_ip?(public_ip, private_ip)
-      output = execute_command "#{$iptables_bin_path} -t nat -n -v -L #{@chain_name}_PRE | "\
-                               "#{$awk_bin_path} '{print $9, $10}' | "\
-                               "#{$grep_bin_path} -i '^#{public_ip}'"
+      command ="#{$iptables_bin_path} -t nat -n -v -L #{@chain_name}_PRE | "\
+               "#{$awk_bin_path} '{print $9, $10}' | "\
+               "#{$grep_bin_path} -i '^#{public_ip}'"
+      output = IpWrangler::Exec.execute_command command
       output.empty?
     end
 
     def execute(*commands)
       commands.each do |command|
-        execute_iptables_command "#{command}"
+        IpWrangler::Exec.execute_iptables_command "#{command}"
       end
     end
 

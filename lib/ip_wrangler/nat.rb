@@ -19,7 +19,7 @@ module IpWrangler
     end
 
     def not_used_port?(public_ip, public_port, protocol)
-      output = execute_command "#{$lsof_bin_path} -i #{protocol}@#{public_ip}:#{public_port}"
+      output = IpWrangler::Exec.execute_command "#{$lsof_bin_path} -i #{protocol}@#{public_ip}:#{public_port}"
       output.empty?
     end
 
