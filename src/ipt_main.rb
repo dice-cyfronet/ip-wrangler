@@ -40,6 +40,14 @@ def valid_protocol?(protocol)
   protocol =~ /^(tcp|udp)$/i ? true : false
 end
 
+def check_released_resource(released_resource)
+  if released_resource.length > 0
+    [200, released_resource.to_json]
+  else
+    204
+  end
+end
+
 # List any NAT port(s)
 get '/nat/port' do
   sandbox do
@@ -163,11 +171,7 @@ delete '/nat/port/*/*/*' do |private_ip, private_port, protocol|
     if valid_ip? private_ip and valid_port? private_port and valid_protocol? protocol
       released_port = $nat.release_port private_ip, private_port, protocol
 
-      if released_port.length > 0
-        [200, released_port.to_json]
-      else
-        204
-      end
+      check_released_resource released_port
     else
       500
     end
@@ -181,11 +185,7 @@ delete '/nat/port/*/*' do |private_ip, private_port|
     if valid_ip? private_ip and valid_port? private_port
       released_port = $nat.release_port private_ip, private_port
 
-      if released_port.length > 0
-        [200, released_port.to_json]
-      else
-        204
-      end
+      check_released_resource released_port
     else
       500
     end
@@ -198,11 +198,7 @@ delete '/nat/port/*' do |private_ip|
     if valid_ip? private_ip
       released_port = $nat.release_port private_ip
 
-      if released_port.length > 0
-        [200, released_port.to_json]
-      else
-        204
-      end
+      check_released_resource released_port
     else
       500
     end
@@ -215,11 +211,7 @@ delete '/nat/ip/*/*' do |private_ip, public_ip|
     if valid_ip? private_ip and valid_ip? public_ip
       released_ip = $nat.release_ip private_ip, public_ip
 
-      if released_ip.length > 0
-        [200, released_port.to_json]
-      else
-        204
-      end
+      check_released_resource released_ip
     else
       500
     end
@@ -232,11 +224,7 @@ delete '/nat/ip/*' do |private_ip|
     if valid_ip? private_ip
       released_ip = $nat.release_ip private_ip
 
-      if released_ip.length > 0
-        [200, released_port.to_json]
-      else
-        204
-      end
+      check_released_resource released_ip
     else
       500
     end
@@ -315,11 +303,7 @@ delete '/dnat/*/*/*' do |ip, port, proto|
     if valid_ip? ip and valid_port? port and valid_protocol? proto
       released_port = $nat.release_port ip, port, proto
 
-      if released_port.length > 0
-        [200, released_port.to_json]
-      else
-        204
-      end
+      check_released_resource released_port
     else
       500
     end
@@ -332,11 +316,7 @@ delete '/dnat/*/*' do |ip, port|
     if valid_ip? ip and valid_port? port
       released_port = $nat.release_port ip, port
 
-      if released_port.length > 0
-        [200, released_port.to_json]
-      else
-        204
-      end
+      check_released_resource released_port
     else
       500
     end
@@ -348,11 +328,7 @@ delete '/dnat/*' do |ip|
     if valid_ip? ip
       released_port = $nat.release_port ip
 
-      if released_port.length > 0
-        [200, released_port.to_json]
-      else
-        204
-      end
+      check_released_resource released_port
     else
       500
     end
