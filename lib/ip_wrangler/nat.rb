@@ -30,7 +30,7 @@ module IpWrangler
 
     def find_port(private_ip, private_port, protocol)
       port = @db.get_first_empty_nat_port protocol
-      if port != nil
+      if port
         public_port = port[:public_port]
         return @config[:port_ip], public_port if not_used_port? @config[:port_ip], public_port, protocol and
             @iptables.not_exists_nat_port? @config[:port_ip], public_port, protocol, private_ip, private_port
@@ -40,7 +40,7 @@ module IpWrangler
 
     def find_ip(private_ip)
       ip = @db.get_first_empty_nat_ip
-      if ip != nil
+      if ip
         public_ip = ip[:public_ip]
         return public_ip if not_used_ip? public_ip && @iptables.not_exists_nat_ip? public_ip, private_ip
       end
@@ -59,7 +59,7 @@ module IpWrangler
       port = @db.select_nat_port private_ip, private_port, protocol
       if port.empty?
         public_ip, public_port = find_port private_ip, private_port, protocol
-        if public_ip != nil && public_port != nil
+        if public_ip && public_port
           @db.insert_nat_port public_ip, public_port, private_ip, private_port, protocol
           @iptables.append_nat_port public_ip, public_port, private_ip, private_port, protocol
           {:public_ip => public_ip, :public_port => public_port, :protocol => protocol,
@@ -76,7 +76,7 @@ module IpWrangler
       ip = @db.select_nat_ip private_ip
       if ip.empty?
         public_ip = find_ip private_ip
-        if public_ip != nil
+        if public_ip
           @db.insert_nat_ip public_ip, private_ip
           @iptables.append_nat_ip public_ip, private_ip
           {:public_ip => public_ip,

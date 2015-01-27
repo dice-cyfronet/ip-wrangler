@@ -13,7 +13,7 @@ module IpWrangler
       end
       nat_ports = []
       @db[:nat_ports].where(params).each do |nat_port|
-        if nat_port[:private_port] != nil && nat_port[:private_port] != nil
+        if nat_port[:private_port] && nat_port[:private_port]
           nat_ports.push nat_port
         end
       end
@@ -26,7 +26,7 @@ module IpWrangler
       end
       nat_ips = []
       @db[:nat_ips].where(params).each do |nat_ip|
-        if nat_ip[:private_ip] != nil
+        if nat_ip[:private_ip]
           nat_ips.push nat_ip
         end
       end

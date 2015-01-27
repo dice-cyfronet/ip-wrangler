@@ -106,7 +106,7 @@ post '/nat/port/*/*/*' do |private_ip, private_port, protocol|
     if valid_ip? private_ip && valid_port? private_port && valid_protocol? protocol
       public_ip_port = $nat.lock_port private_ip, private_port, protocol
 
-      if public_ip_port != nil
+      if public_ip_port
         public_ip_port[:public_ip] = $config[:ext_ip]
         public_ip_port.to_json
       else
@@ -128,21 +128,21 @@ post '/nat/port/*/*' do |private_ip, private_port|
 
       out = nil
 
-      if public_ip_port_tcp != nil
+      if public_ip_port_tcp
         public_ip_port_tcp[:public_ip] = $config[:ext_ip]
         out = "#{public_ip_port_tcp.to_json}"
       end
 
-      if public_ip_port_udp != nil
+      if public_ip_port_udp
         public_ip_port_udp[:public_ip] = $config[:ext_ip]
-        if out != nil
+        if out
           out += ",#{public_ip_port_udp.to_json}"
         else
           out = "#{public_ip_port_udp.to_json}"
         end
       end
 
-      if out != nil
+      if out
         out = "[#{out}]"
         out
       else
@@ -160,7 +160,7 @@ post '/nat/ip/*' do |private_ip|
     if valid_ip? private_ip
       public_ip = $nat.lock_ip private_ip
 
-      if public_ip != nil
+      if public_ip
         public_ip.to_json
       else
         404
@@ -273,7 +273,7 @@ post '/dnat/*' do |ip|
       data.each do |dpp|
         if valid_port? dpp['port'] && valid_protocol? dpp['proto']
           redir = $nat.lock_port ip, dpp['port'], dpp['proto']
-          if redir != nil
+          if redir
             redir[:public_ip] = $config[:ext_ip]
             redir[:privPort] = redir[:private_port]
             redir[:pubIp] = redir[:public_ip]
