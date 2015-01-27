@@ -1,9 +1,10 @@
 #!/bin/bash
 
-export __DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export __dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export __dir=$( dirname ${__dir} )
 
-pushd ${__DIR}/src/
-thin stop
+pushd ${__dir}/src/
+    thin stop
 popd
 
 exit 0
