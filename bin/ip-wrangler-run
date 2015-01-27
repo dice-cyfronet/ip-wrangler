@@ -24,6 +24,6 @@ while getopts 'i:p:t:' __flag; do
   esac
 done
 
-pushd ${__dir}/src/
+pushd ${__dir}/lib/
     thin -d -a ${__ip} -p ${__port} -R ./config.ru --tag ${__tag} start
 popd

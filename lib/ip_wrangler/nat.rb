@@ -9,7 +9,9 @@ module IpWrangler
       @logger = logger
 
       @db.select_nat_port.each do |nat_port|
-        @iptables.append_nat_port nat_port[:public_ip], nat_port[:public_port], nat_port[:private_ip], nat_port[:private_port], nat_port[:protocol]
+        @iptables.append_nat_port nat_port[:public_ip], nat_port[:public_port],
+                                  nat_port[:private_ip], nat_port[:private_port],
+                                  nat_port[:protocol]
       end
       @db.select_nat_ip.each do |nat_ip|
         @iptables.append_nat_ip nat_ip[:public_ip], nat_ip[:private_ip]
@@ -90,7 +92,9 @@ module IpWrangler
     def release_port(private_ip, private_port=nil, protocol=nil)
       released_port = []
       @db.select_nat_port(private_ip, private_port, protocol).each do |nat_port|
-        @iptables.delete_nat_port nat_port[:public_ip], nat_port[:public_port], nat_port[:private_ip], nat_port[:private_port], nat_port[:protocol]
+        @iptables.delete_nat_port nat_port[:public_ip], nat_port[:public_port],
+                                  nat_port[:private_ip], nat_port[:private_port],
+                                  nat_port[:protocol]
         released_port.push({:public_ip => nat_port[:public_ip], :public_port => nat_port[:public_port],
                             :private_ip => nat_port[:private_ip], :private_port => nat_port[:private_port],
                             :protocol => nat_port[:protocol]})

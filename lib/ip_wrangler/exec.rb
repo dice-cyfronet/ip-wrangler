@@ -2,6 +2,8 @@ module IpWrangler
   module Exec
     $iptables_bin_path = '/usr/bin/sudo /sbin/iptables'
 
+    extend self
+
     def execute_command(command)
       output = `#{command}`
       puts "Execute: #{command} => output: #{output}, result: #{$?.exitstatus}"

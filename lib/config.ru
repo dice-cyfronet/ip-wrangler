@@ -9,14 +9,17 @@ require 'sinatra'
 require 'thin'
 require 'yaml'
 
-require './ipt_db'
-require './ipt_ip'
-require './ipt_iptables'
-require './ipt_nat'
-require './ipt_exec'
+require './ip_wrangler/db'
+require './ip_wrangler/ip'
+require './ip_wrangler/iptables'
+require './ip_wrangler/nat'
+require './ip_wrangler/exec'
 
-unless ENV.has_key?('__NO_LOG')
-  console_logger = File.new('log/ipt_wr_console.log', 'w')
+log_directory='../log'
+config_directory='../etc'
+
+unless ENV.has_key?('__no_log')
+  console_logger = File.new("#{log_directory}/thin_console.log", 'w')
 
   STDOUT.reopen(console_logger)
   STDERR.reopen(console_logger)
@@ -24,12 +27,12 @@ end
 
 puts 'Checking if config.yml is existing...'
 
-unless File.file?('config.yml')
+unless File.file?("#{config_directory}/config.yml")
   puts 'No config.yml file found. Exiting.'
   exit(1)
 end
 
-config = YAML.load_file('config.yml')
+config = YAML.load_file("#{config_directory}/config.yml")
 
 puts "Checking if #{config[:db_name]} is existing..."
 
@@ -40,7 +43,7 @@ end
 
 puts 'Checking database...'
 
-db = Sequel.connect('sqlite://' + config[:db_name])
+db = Sequel.connect("sqlite://#{config_directory}/#{config[:db_name]}")
 
 unless db.table_exists? :nat_ports
   puts 'No nat_ports table. Creating it...'
@@ -85,29 +88,35 @@ end
 db.disconnect
 
 puts "Creating chain #{config[:iptables_chain_name]}_PRE in nat table..."
-execute_iptables_command Command.new_chain("#{config[:iptables_chain_name]}_PRE", 'nat')
+command_new_pre_nat_chain = IpWrangler::Command.new_chain("#{config[:iptables_chain_name]}_PRE", 'nat')
+IpWrangler::Exec.execute_iptables_command command_new_pre_nat_chain
 
 puts "Creating chain #{config[:iptables_chain_name]}_POST in nat table..."
-execute_iptables_command Command.new_chain("#{config[:iptables_chain_name]}_POST", 'nat')
+command_new_post_nat_chain = IpWrangler::Command.new_chain("#{config[:iptables_chain_name]}_POST", 'nat')
+IpWrangler::Exec.execute_iptables_command command_new_post_nat_chain
 
 puts 'Appending rule, if not exists, to PREROUTING chain...'
-execute_iptables_command Command.check_rule('PREROUTING', 'nat', [Parameter.jump("#{config[:iptables_chain_name]}_PRE")])
+command_check_pre_nat_jump_rule = IpWrangler::Command.check_rule('PREROUTING', 'nat', [IpWrangler::Parameter.jump("#{config[:iptables_chain_name]}_PRE")])
+IpWrangler::Exec.execute_iptables_command command_check_pre_nat_jump_rule
 if $?.exitstatus == 1
-  execute_iptables_command Command.append_rule('PREROUTING', 'nat', [Parameter.jump("#{config[:iptables_chain_name]}_PRE")])
+  command_append_pre_nat_jump_rule = IpWrangler::Command.append_rule('PREROUTING', 'nat', [IpWrangler::Parameter.jump("#{config[:iptables_chain_name]}_PRE")])
+  IpWrangler::Exec.execute_iptables_command command_append_pre_nat_jump_rule
 end
 
 puts 'Appending rule, if not exists, to POSTROUTING chain...'
-execute_iptables_command Command.check_rule('POSTROUTING', 'nat', [Parameter.jump("#{config[:iptables_chain_name]}_POST")])
+command_check_post_nat_jump_rule = IpWrangler::Command.check_rule('POSTROUTING', 'nat', [IpWrangler::Parameter.jump("#{config[:iptables_chain_name]}_POST")])
+IpWrangler::Exec.execute_iptables_command command_check_post_nat_jump_rule
 if $?.exitstatus == 1
-  execute_iptables_command Command.append_rule('POSTROUTING', 'nat', [Parameter.jump("#{config[:iptables_chain_name]}_POST")])
+  command_append_post_nat_jump_rule = IpWrangler::Command.append_rule('POSTROUTING', 'nat', [IpWrangler::Parameter.jump("#{config[:iptables_chain_name]}_POST")])
+  IpWrangler::Exec.execute_iptables_command command_append_post_nat_jump_rule
 end
 
 Bundler.require
 
-require File.dirname(__FILE__) + '/ipt_main.rb'
+require File.dirname(__FILE__) + '/ip_wrangler/main.rb'
 
 set :environment, ENV['RACK_ENV'].to_sym
-set :app_file, 'ipt_main.rb'
+set :app_file, 'ip_wrangler/main.rb'
 set :raise_errors, true
 
 use Rack::MethodOverride
