@@ -81,7 +81,7 @@ module IpWrangler
       end
       nil
     end
-    
+
     def get_first_empty_nat_ip
       params = { private_ip: nil }
       empty_nat_ips = @db[:nat_ips].where(params)
@@ -90,7 +90,7 @@ module IpWrangler
       end
       nil
     end
-    
+
     def not_exists_nat_port?(public_ip, public_port, protocol, private_ip, private_port)
       @db[:nat_ports].where(public_ip: public_ip, public_port: public_port,
         private_ip: private_ip, private_port: private_port, protocol: protocol).empty?

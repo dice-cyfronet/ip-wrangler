@@ -9,7 +9,7 @@ module IpWrangler
     end
 
     def validate_ip(ip)
-      ip.select { |octet| octet < 0 or octet > 255 }.length == 0
+      ip.select { |octet| octet < 0 || octet > 255 }.length == 0
     end
 
     def range_ips(start, stop)
