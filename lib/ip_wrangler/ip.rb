@@ -18,9 +18,9 @@ module IpWrangler
         stop = stop.inject { |sum, octet| sum * 256 + octet }
 
         (start..stop).map do |ip|
-          IP.new([(ip/16777216) % 256,
-                  (ip/65536) % 256,
-                  (ip/256) % 256,
+          IP.new([(ip / 16777216) % 256,
+                  (ip / 65536) % 256,
+                  (ip / 256) % 256,
                   ip % 256])
         end
       end
