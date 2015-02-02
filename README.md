@@ -5,11 +5,17 @@
 
 In polish __Portostawiaczka__
 
-## Requirements
+## Usage
+
+This application will be used as a standalone service. It need to be run on a node which is a router for Virtual Machines.
+
+## Installation
+
+### Requirements
 
 * `iptables`
 * `lsof`
-* `sudo` (user which will be used to start `ipwrangler` needs to have permissions to run `/sbin/iptables` and `/usr/bin/lsof`)
+* `sudo` (user used to run `ipwrangler` needs to have permissions to run `/sbin/iptables` and `/usr/bin/lsof` via `sudo`)
 * `ruby` (recommended version ≥ 1.9)
 * `ruby-dev` with `g++`, `make`
 * `bundler`
@@ -17,35 +23,43 @@ In polish __Portostawiaczka__
 * `thin`
 * `libsqlite3-dev`
 
-## Usage
+### Packages / Dependencies
 
-Following command execute as `root`.
+Update your system (as root, **optional**):
 
-Install required packages:
+    aptitude update
+    aptitude upgrade
 
-Using `apt-get`:
+Install additional packages (as root):
 
-    root@host_name # apt-get install -y iptables lsof sudo ruby ruby-dev bundler rake thin libsqlite3-dev g++ make
+    aptitude install iptables lsof sudo libsqlite3-dev g++ make autoconf bison build-essential libssl-dev libyaml-dev libreadline6 libreadline6-dev zlib1g zlib1g-dev
 
-Using `aptitude`:
+Install `ruby` and `bundler` (as root):
 
-    root@host_name # aptitude install -y iptables lsof sudo ruby ruby-dev bundler rake thin libsqlite3-dev g++ make
+    mkdir /tmp/ruby
+    pushd /tmp/ruby
+    curl --progress http://ftp.ruby-lang.org/pub/ruby/2.1/ruby-2.1.2.tar.gz | tar xz
+    pushd /tmp/ruby/ruby-2.1.2
+    ./configure --disable-install-rdoc
+    make
+    make install
+    gem install bundler --no-ri --no-rdoc
+    popd
+    popd
 
-Create user which will be used to start `ipwrangler`:
+#### Permissions
 
-    root@host_name # adduser user_name
+Create user which will be used to run `ipwrangler` (as root):
 
-where:
+    adduser user_name
 
-* `user_name` can be any name
+Add created user to `sudo` group (as root):
 
-Add created user to `sudo` group:
+    adduser user_name sudo
 
-    root@host_name # adduser user_name sudo
+To enable `iptables` and `lsof` for user `user_name` modify `/etc/sudoers` (as root):
 
-To enable `iptables` and `lsof` for user which will be used to start `ipwrangler` modify `/etc/sudoers`:
-
-    root@host_name # visudo
+    visudo
 
 Add following line at bottom of file:
 
@@ -54,43 +68,41 @@ Add following line at bottom of file:
 where:
 
 * `host_name` is come from `/etc/hostname`
-* `user_name` is the name of user which will be used to start `ipwrangler`
 
-Following command execute as `user_name`.
+### Installation
 
-Download archive with sources or clone repository from `master` branch:
+Download archive with sources or clone repository from `master` branch.
 
-Download archive:
+Download archive (as non-root):
 
-    user_name@host_name $ wget --no-check-certificate https://gitlab.dev.cyfronet.pl/atmosphere/ipt_wr/repository/archive.zip?ref=master
+    wget --no-check-certificate https://gitlab.dev.cyfronet.pl/atmosphere/ipt_wr/repository/archive.zip?ref=master
 
-Clone repository:
+Clone repository (as non-root):
 
-    user_name@host_name $ GIT_SSL_NO_VERIFY=1 git clone -b master https://gitlab.dev.cyfronet.pl/atmosphere/ipt_wr.git
+    GIT_SSL_NO_VERIFY=1 git clone -b master https://gitlab.dev.cyfronet.pl/atmosphere/ipt_wr.git
 
 Following command execute as `user_name` in root directory of project.
 
-Install required bundles:
+Install required bundles and configure `ipwrangler` (as non-root):
 
-    user_name@host_name $ rake gem
+    bundle install --deployment
+    rake configure
 
-Configure `ipwrangler`:
+### Run
 
-    user_name@host_name $ rake configure
+For the first time run application in foreground:
 
-First time run, in foreground:
-
-    user_name@host_name $ rake rundevel
+    rake rundevel
 
 Verify if everything is okey.
 
-Next time run, in background:
+For the next time run it in background:
 
-    user_name@host_name $ rake run
+    rake run
 
 Stop `ipwrangler` running in background:
 
-    user_name@host_name $ rake stop
+    rake stop
 
 Clean rules created by `ipwrangler` from `iptables`:
 
