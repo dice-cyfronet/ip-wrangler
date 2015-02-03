@@ -15,6 +15,7 @@ GEM
     rack-protection (1.5.3)
       rack
     rainbow (2.0.0)
+    rake (10.4.2)
     rubocop (0.25.0)
       parser (>= 2.2.0.pre.4, < 3.0)
       powerpack (~> 0.0.6)
@@ -38,8 +39,10 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bundler
   hound-tools (~> 0.0.4)
   json
+  rake
   sequel
   sinatra
   sqlite3
