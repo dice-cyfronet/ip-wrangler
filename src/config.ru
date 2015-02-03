@@ -16,7 +16,7 @@ require './ipt_nat'
 require './ipt_exec'
 
 unless ENV.has_key?('__NO_LOG')
-  console_logger = File.new('log/ipt_wr_console.log', 'w')
+  console_logger = File.new('log/ipt_wr_console.log', 'a')
 
   STDOUT.reopen(console_logger)
   STDERR.reopen(console_logger)
