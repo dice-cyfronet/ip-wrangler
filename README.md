@@ -7,7 +7,7 @@ In polish __Portostawiaczka__
 
 ## Usage
 
-This application will be used as a standalone service. It need to be run on a node which is a router for Virtual Machines.
+This application will be used as a standalone service. It need to be run on a node which is a router for Virtual Machines. It is able to add and remove port mapping (DNAT `iptables` rules) for VMs which are behind the NAT. It provides API reachable via HTTP URL (`GET`, `POST`, `DELETE`) which performs changes `iptables` `nat` tables.
 
 ## Installation
 
@@ -16,12 +16,7 @@ This application will be used as a standalone service. It need to be run on a no
 * `iptables`
 * `lsof`
 * `sudo` (user used to run `ipwrangler` needs to have permissions to run `/sbin/iptables` and `/usr/bin/lsof` via `sudo`)
-* `ruby` (recommended version ≥ 1.9)
-* `ruby-dev` with `g++`, `make`
-* `bundler`
-* `rake`
-* `thin`
-* `libsqlite3-dev`
+* `sqlite3` with `libsqlite3-dev`
 
 ### Packages / Dependencies
 
@@ -30,11 +25,11 @@ Update your system (as root, **optional**):
     aptitude update
     aptitude upgrade
 
-Install additional packages (as root):
+Install additional packages (as root, **optional**):
 
     aptitude install iptables lsof sudo libsqlite3-dev g++ make autoconf bison build-essential libssl-dev libyaml-dev libreadline6 libreadline6-dev zlib1g zlib1g-dev
 
-Install `ruby` and `bundler` (as root):
+Install `ruby` and `bundler` (as root, **optional**):
 
     mkdir /tmp/ruby
     pushd /tmp/ruby
