@@ -1,3 +1,6 @@
+.bundle/
+vendor/
+
 *.db
 *.log
 config.yml
