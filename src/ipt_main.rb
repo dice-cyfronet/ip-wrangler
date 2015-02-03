@@ -40,6 +40,24 @@ def valid_protocol?(protocol)
   protocol =~ /^(tcp|udp)$/i ? true : false
 end
 
+def release_ip_and_check(private_ip, public_ip = nil)
+  released_ip = $nat.release_ip private_ip, public_ip
+  check_released_resource released_ip
+end
+
+def release_port_and_check(private_ip, private_port = nil, protocol = nil)
+  released_port = $nat.release_port private_ip, private_port, protocol
+  check_released_resource released_port
+end
+
+def check_released_resource(released_resource)
+  if released_resource.length > 0
+    [200, released_resource.to_json]
+  else
+    204
+  end
+end
+
 # List any NAT port(s)
 get '/nat/port' do
   sandbox do
@@ -161,13 +179,7 @@ delete '/nat/port/*/*/*' do |private_ip, private_port, protocol|
   sandbox do
     private_port = private_port.to_i
     if valid_ip? private_ip and valid_port? private_port and valid_protocol? protocol
-      released_port = $nat.release_port private_ip, private_port, protocol
-
-      if released_port.length > 0
-        204
-      else
-        404
-      end
+      release_port_and_check private_ip, private_port, protocol
     else
       500
     end
@@ -179,13 +191,7 @@ delete '/nat/port/*/*' do |private_ip, private_port|
   sandbox do
     private_port = private_port.to_i
     if valid_ip? private_ip and valid_port? private_port
-      released_port = $nat.release_port private_ip, private_port
-
-      if released_port.length > 0
-        204
-      else
-        404
-      end
+      release_port_and_check private_ip, private_port
     else
       500
     end
@@ -196,13 +202,7 @@ end
 delete '/nat/port/*' do |private_ip|
   sandbox do
     if valid_ip? private_ip
-      released_port = $nat.release_port private_ip
-
-      if released_port.length > 0
-        204
-      else
-        404
-      end
+      release_port_and_check private_ip
     else
       500
     end
@@ -213,13 +213,7 @@ end
 delete '/nat/ip/*/*' do |private_ip, public_ip|
   sandbox do
     if valid_ip? private_ip and valid_ip? public_ip
-      released_ip = $nat.release_ip private_ip, public_ip
-
-      if released_ip.length > 0
-        204
-      else
-        404
-      end
+      release_ip_and_check private_ip, public_ip
     else
       500
     end
@@ -230,13 +224,7 @@ end
 delete '/nat/ip/*' do |private_ip|
   sandbox do
     if valid_ip? private_ip
-      released_ip = $nat.release_ip private_ip
-
-      if released_ip.length > 0
-        204
-      else
-        404
-      end
+      release_ip_and_check private_ip
     else
       500
     end
@@ -313,13 +301,7 @@ delete '/dnat/*/*/*' do |ip, port, proto|
   sandbox do
     port = port.to_i
     if valid_ip? ip and valid_port? port and valid_protocol? proto
-      released_port = $nat.release_port ip, port, proto
-
-      if released_port.length > 0
-        204
-      else
-        404
-      end
+      release_port_and_check ip, port, proto
     else
       500
     end
@@ -330,13 +312,7 @@ delete '/dnat/*/*' do |ip, port|
   sandbox do
     port = port.to_i
     if valid_ip? ip and valid_port? port
-      released_port = $nat.release_port ip, port
-
-      if released_port.length > 0
-        204
-      else
-        404
-      end
+      release_port_and_check ip, port
     else
       500
     end
@@ -346,13 +322,7 @@ end
 delete '/dnat/*' do |ip|
   sandbox do
     if valid_ip? ip
-      released_port = $nat.release_port ip
-
-      if released_port.length > 0
-        204
-      else
-        404
-      end
+      release_port_and_check ip
     else
       500
     end
