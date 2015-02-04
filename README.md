@@ -5,7 +5,7 @@
 
 In polish __Portostawiaczka__
 
-This application manages DNAT port mappings and IP mappings for Virtual Machiness (behind the NAT). It need to be run on a node which is a router for Virtual Machines. It provides API reachable via HTTP URL (`GET`, `POST`, `DELETE`) which allow to perform changes on `iptables` `nat` tables. It handles pool of used and empty port mappings or IP mappings using SQLite database. It used by [Atmosphere](https://github.com/dice-cyfronet/atmosphere).
+This application manages DNAT port mappings and IP mappings for Virtual Machiness (behind the NAT) managed by [Atmosphere](https://github.com/dice-cyfronet/atmosphere). It need to be run on a node which is a router for Virtual Machines. It provides API reachable via HTTP URL (`GET`, `POST`, `DELETE`) which allow to perform changes on `iptables` `nat` tables. It handles pool of used and empty port mappings or IP mappings using SQLite database.
 
 ## Installation
 
