@@ -105,6 +105,22 @@ Purge `ipwrangler` database and settings:
 
     user_name@host_name $ rake purge
 
+### Log'n'roll
+
+Use *logrotate* to roll generated logs. Example configuration for *logrotate*
+
+    # ip-wrangler logrotate settings
+    # based on: http://stackoverflow.com/a/4883967
+    
+    /path/to/ip-wrangler/src/log/*.log {
+        daily
+        missingok
+        rotate 90
+        compress
+        notifempty
+        copytruncate
+    }
+
 ## API
 
 ### Port
