@@ -5,7 +5,7 @@
 
 In polish __Portostawiaczka__
 
-This application manages DNAT port mappings and IP mappings for Virtual Machiness (behind the NAT) managed by [Atmosphere](https://github.com/dice-cyfronet/atmosphere). It need to be run on a node which is a router for Virtual Machines. It provides API reachable via HTTP URL (`GET`, `POST`, `DELETE`) which allow to perform changes on `iptables` `nat` tables. It handles pool of used and empty port mappings or IP mappings using SQLite database.
+This application manages DNAT port mappings and IP mappings for Virtual Machiness (behind the NAT). It need to be run on a node which is a router for Virtual Machines. It provides API reachable via HTTP URL (`GET`, `POST`, `DELETE`) which allow to perform changes on `iptables` `nat` tables. It handles pool of used and empty port mappings or IP mappings using SQLite database.
 
 ## Installation
 
@@ -68,11 +68,11 @@ Download archive with sources or clone repository from `master` branch.
 
 Download archive (as non-root):
 
-    wget --no-check-certificate https://gitlab.dev.cyfronet.pl/atmosphere/ipt_wr/repository/archive.zip?ref=master
+    wget --no-check-certificate https://github.com/dice-cyfronet/ip-wrangler/archive/master.zip
 
 Clone repository (as non-root):
 
-    GIT_SSL_NO_VERIFY=1 git clone -b master https://gitlab.dev.cyfronet.pl/atmosphere/ipt_wr.git
+    GIT_SSL_NO_VERIFY=1 git clone -b master https://github.com/dice-cyfronet/ip-wrangler.git
 
 Following command execute as `user_name` in root directory of project.
 
