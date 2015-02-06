@@ -19,7 +19,7 @@ In polish __Portostawiaczka__
 
 ## Usage
 
-The following commands shoule be executed as `root`.
+Following command execute as `root`.
 
 Install required packages:
 
@@ -31,7 +31,7 @@ Using `aptitude`:
 
     root@host_name # aptitude install -y iptables lsof sudo ruby ruby-dev bundler rake thin libsqlite3-dev g++ make
 
-Create a user account which will be used to start `ipwrangler`:
+Create user which will be used to start `ipwrangler`:
 
     root@host_name # adduser user_name
 
@@ -39,26 +39,26 @@ where:
 
 * `user_name` can be any name
 
-Add the newly created user to the `sudo` group:
+Add created user to `sudo` group:
 
     root@host_name # adduser user_name sudo
 
-To enable `iptables` and `lsof` for the user account which will be used to start `ipwrangler`, modify `/etc/sudoers`:
+To enable `iptables` and `lsof` for user which will be used to start `ipwrangler` modify `/etc/sudoers`:
 
     root@host_name # visudo
 
-Add the following line at the bottom of the file:
+Add following line at bottom of file:
 
     user_name host_name= NOPASSWD: /sbin/iptables, /usr/bin/lsof
 
 where:
 
-* `host_name` comes from `/etc/hostname`
-* `user_name` is the name of user account which will be used to start `ipwrangler`
+* `host_name` is come from `/etc/hostname`
+* `user_name` is the name of user which will be used to start `ipwrangler`
 
-The following command should be executed as `user_name`.
+Following command execute as `user_name`.
 
-Download the source archive or clone repository from the `master` branch:
+Download archive with sources or clone repository from `master` branch:
 
 Download archive:
 
@@ -68,9 +68,9 @@ Clone repository:
 
     user_name@host_name $ GIT_SSL_NO_VERIFY=1 git clone -b master https://gitlab.dev.cyfronet.pl/atmosphere/ipt_wr.git
 
-The following commands should be executed as `user_name` in the root directory of the project.
+Following command execute as `user_name` in root directory of project.
 
-Install te required bundles:
+Install required bundles:
 
     user_name@host_name $ rake gem
 
@@ -78,25 +78,25 @@ Configure `ipwrangler`:
 
     user_name@host_name $ rake configure
 
-When launching the system for the first time, run the following in foreground:
+First time run, in foreground:
 
     user_name@host_name $ rake rundevel
 
-Verify that everything is okay.
+Verify if everything is okey.
 
-For subsequent runs, launch the system in the background:
+Next time run, in background:
 
     user_name@host_name $ rake run
 
-To stop `ipwrangler` running in the background:
+Stop `ipwrangler` running in background:
 
     user_name@host_name $ rake stop
 
-To clean rules created by `ipwrangler` in `iptables`:
+Clean rules created by `ipwrangler` from `iptables`:
 
     user_name@host_name $ rake clean
 
-To purge the whole `ipwrangler` database and settings:
+Purge `ipwrangler` database and settings:
 
     user_name@host_name $ rake purge
 
@@ -146,7 +146,7 @@ Listing:
 
 Creating:
 
-* `POST /dnat/<private_ip>` - create NAT port for specified IP, request body should be in the following format
+* `POST /dnat/<private_ip>` - create NAT port for specified IP, request body should be in format
 
 _example_
 
