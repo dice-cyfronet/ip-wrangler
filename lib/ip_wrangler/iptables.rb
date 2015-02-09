@@ -12,19 +12,19 @@ module IpWrangler
 
     def rule_nat_port(public_ip, public_port, private_ip, private_port, protocol)
       [Parameter.destination(public_ip),
-        Parameter.protocol(protocol),
-        Parameter.destination_port(public_port),
-        Parameter.jump('DNAT'),
-        Parameter.to_destination("#{private_ip}:#{private_port}")]
+       Parameter.protocol(protocol),
+       Parameter.destination_port(public_port),
+       Parameter.jump('DNAT'),
+       Parameter.to_destination("#{private_ip}:#{private_port}")]
     end
 
     def rule_nat_ip(public_ip, private_ip)
       rule_dnat = [Parameter.destination(public_ip),
-        Parameter.jump('DNAT'),
-        Parameter.to_destination(private_ip)]
+                   Parameter.jump('DNAT'),
+                   Parameter.to_destination(private_ip)]
       rule_snat = [Parameter.source(private_ip),
-        Parameter.jump('SNAT'),
-        Parameter.to(public_ip)]
+                   Parameter.jump('SNAT'),
+                   Parameter.to(public_ip)]
       return rule_dnat, rule_snat
     end
 
