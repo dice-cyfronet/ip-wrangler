@@ -25,7 +25,7 @@ module IpWrangler
       rule_snat = [Parameter.source(private_ip),
                    Parameter.jump('SNAT'),
                    Parameter.to(public_ip)]
-      return rule_dnat, rule_snat
+      rule_dnat, rule_snat
     end
 
     def append_nat_port(public_ip, public_port, private_ip, private_port, protocol)
@@ -73,7 +73,7 @@ module IpWrangler
     end
 
     def not_exists_nat_ip?(public_ip, _)
-      command ="#{$iptables_bin_path} -t nat -n -v -L #{@chain_name}_PRE | "\
+      command = "#{$iptables_bin_path} -t nat -n -v -L #{@chain_name}_PRE | "\
         "#{$awk_bin_path} '{print $9, $10}' | "\
         "#{$grep_bin_path} -i '^#{public_ip}'"
       output = IpWrangler::Exec.execute_command(command)
