@@ -85,11 +85,9 @@ module IpWrangler
         IpWrangler::Exec.execute_iptables_command("#{command}")
       end
     end
-
   end
 
   class Command
-
     @@commands = {
       append_rule: '--append',
       insert_rule: '--insert',
@@ -157,11 +155,9 @@ module IpWrangler
     def self.delete_chain(chain, table)
       "-t #{table} #{@@commands[:delete_chain]} #{chain}"
     end
-
   end
 
   class Parameter
-
     @@parameters = {
       protocol: '--protocol',
       source: '--source',
@@ -222,6 +218,5 @@ module IpWrangler
     def self.jump(target)
       new(@@parameters[:jump], target)
     end
-
   end
 end
