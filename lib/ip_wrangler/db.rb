@@ -6,9 +6,8 @@ module IpWrangler
     end
 
     def select_nat_port(private_ip = nil, private_port = nil, protocol = nil)
-      params = { private_ip: private_ip,
-        private_port: private_port,
-        protocol: protocol }.select do |_, value|
+      params = { private_ip: private_ip, private_port: private_port,
+                 protocol: protocol }.select do |_, value|
         !value.nil?
       end
       nat_ports = []
@@ -34,9 +33,8 @@ module IpWrangler
     end
 
     def insert_nat_port(public_ip, public_port, private_ip, private_port, protocol)
-      params = { public_ip: public_ip,
-        public_port: public_port,
-        protocol: protocol }
+      params = { public_ip: public_ip, public_port: public_port,
+                 protocol: protocol }
       data = { private_ip: private_ip, private_port: private_port }
       @db[:nat_ports].where(params).update(data)
       @logger.info("Insert nat ip port entry: #{public_ip}/#{public_port} -> "\
@@ -51,9 +49,8 @@ module IpWrangler
     end
 
     def delete_nat_port(private_ip, private_port = nil, protocol = nil)
-      params = { private_ip: private_ip,
-        private_port: private_port,
-        protocol: protocol }.select do |_, value|
+      params = { private_ip: private_ip, private_port: private_port,
+                 protocol: protocol }.select do |_, value|
         !value.nil?
       end
       data = { private_ip: nil, private_port: nil }
@@ -72,9 +69,8 @@ module IpWrangler
     end
 
     def get_first_empty_nat_port(protocol)
-      params = { private_ip: nil,
-        private_port: nil,
-        protocol: protocol }
+      params = { private_ip: nil, private_port: nil,
+                 protocol: protocol }
       empty_nat_ports = @db[:nat_ports].where(params)
       if not empty_nat_ports.empty?
         return empty_nat_ports.to_a[0]
