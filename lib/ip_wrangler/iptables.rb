@@ -99,7 +99,7 @@ module IpWrangler
       policy_chain: '--policy',
       zero_chain: '--zero',
       flush_chain: '--flush',
-      delete_chain: '--delete-chain',
+      delete_chain: '--delete-chain'
     }
 
     def self.parameters_to_s(parameters)
@@ -168,7 +168,7 @@ module IpWrangler
       out_interface: '--out-interface',
       to_destination: '--to-destination',
       to: '--to',
-      jump: '--jump',
+      jump: '--jump'
     }
 
     def initialize(name, value = nil)
