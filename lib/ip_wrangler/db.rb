@@ -60,7 +60,7 @@ module IpWrangler
 
     def delete_nat_ip(private_ip, public_ip = nil)
       params = { private_ip: private_ip,
-        public_ip: public_ip }.select do |_, value|
+                 public_ip: public_ip }.select do |_, value|
         !value.nil?
       end
       data = { private_ip: nil }

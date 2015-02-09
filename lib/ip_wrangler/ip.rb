@@ -19,9 +19,9 @@ module IpWrangler
 
         (start..stop).map do |ip|
           IP.new([(ip / 16777216) % 256,
-              (ip / 65536) % 256,
-              (ip / 256) % 256,
-              ip % 256])
+                  (ip / 65536) % 256,
+                  (ip / 256) % 256,
+                  ip % 256])
         end
       end
     end
