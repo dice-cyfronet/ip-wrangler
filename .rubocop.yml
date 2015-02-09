@@ -1,4 +1,5 @@
 AllCops:
   RunRailsCops: true
+
 Metrics/LineLength:
   Max: 99
