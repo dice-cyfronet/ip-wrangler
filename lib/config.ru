@@ -79,7 +79,7 @@ unless db.table_exists?(:nat_ips)
 
   if config['ip'] != nil
     config['ip'].each do |public_ip|
-      db[:nat_ips].insert(:public_ip => public_ip, :private_ip => nil)
+      db[:nat_ips].insert(public_ip: public_ip, private_ip: nil)
       puts "Add ip:#{public_ip}"
     end
   end
