@@ -7,14 +7,14 @@ module IpWrangler
 
     def select_nat_port(private_ip = nil, private_port = nil, protocol = nil)
       params = { private_ip: private_ip,
-                 private_port: private_port,
-                 protocol: protocol }.select do |_, value|
+        private_port: private_port,
+        protocol: protocol }.select do |_, value|
         !value.nil?
       end
       nat_ports = []
       @db[:nat_ports].where(params).each do |nat_port|
         if nat_port[:private_port] && nat_port[:private_port]
-          nat_ports.push nat_port
+          nat_ports.push(nat_port)
         end
       end
       nat_ports
@@ -27,7 +27,7 @@ module IpWrangler
       nat_ips = []
       @db[:nat_ips].where(params).each do |nat_ip|
         if nat_ip[:private_ip]
-          nat_ips.push nat_ip
+          nat_ips.push(nat_ip)
         end
       end
       nat_ips
@@ -35,46 +35,46 @@ module IpWrangler
 
     def insert_nat_port(public_ip, public_port, private_ip, private_port, protocol)
       params = { public_ip: public_ip,
-                 public_port: public_port,
-                 protocol: protocol }
+        public_port: public_port,
+        protocol: protocol }
       data = { private_ip: private_ip, private_port: private_port }
       @db[:nat_ports].where(params).update(data)
-      @logger.info "Insert nat ip port entry: #{public_ip}/#{public_port} -> "\
-                   "#{private_ip}/#{private_port} (#{protocol})"
+      @logger.info("Insert nat ip port entry: #{public_ip}/#{public_port} -> "\
+          "#{private_ip}/#{private_port} (#{protocol})")
     end
 
     def insert_nat_ip(public_ip, private_ip)
       params = { public_ip: public_ip }
       data = { private_ip: private_ip }
       @db[:nat_ips].where(params).update(data)
-      @logger.info "Insert nat ip entry: #{public_ip} -> #{private_ip}"
+      @logger.info("Insert nat ip entry: #{public_ip} -> #{private_ip}")
     end
 
     def delete_nat_port(private_ip, private_port = nil, protocol = nil)
       params = { private_ip: private_ip,
-                 private_port: private_port,
-                 protocol: protocol }.select do |_, value|
+        private_port: private_port,
+        protocol: protocol }.select do |_, value|
         !value.nil?
       end
       data = { private_ip: nil, private_port: nil }
       @db[:nat_ports].where(params).update(data)
-      @logger.info "Delete nat ip port entry: #{private_ip}/#{private_port} (#{protocol})"
+      @logger.info("Delete nat ip port entry: #{private_ip}/#{private_port} (#{protocol})")
     end
 
     def delete_nat_ip(private_ip, public_ip = nil)
       params = { private_ip: private_ip,
-                 public_ip: public_ip }.select do |_, value|
+        public_ip: public_ip }.select do |_, value|
         !value.nil?
       end
       data = { private_ip: nil }
       @db[:nat_ips].where(params).update(data)
-      @logger.info "Delete nat ip entry: #{public_ip}"
+      @logger.info("Delete nat ip entry: #{public_ip}")
     end
 
     def get_first_empty_nat_port(protocol)
       params = { private_ip: nil,
-                 private_port: nil,
-                 protocol: protocol }
+        private_port: nil,
+        protocol: protocol }
       empty_nat_ports = @db[:nat_ports].where(params)
       if not empty_nat_ports.empty?
         return empty_nat_ports.to_a[0]

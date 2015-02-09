@@ -5,8 +5,8 @@ export __dir=$( dirname ${__dir} )
 
 set -x
 
-rm -i ${__dir}/src/log/*.log
-rm -i ${__dir}/src/config.yml
-rm -i ${__dir}/src/ipt.db
+rm -i ${__dir}/log/*.log
+rm -i ${__dir}/lib/config.yml
+rm -i ${__dir}/lib/ipt.db
 
 exit 0

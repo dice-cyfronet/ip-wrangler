@@ -28,5 +28,4 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'rake'
-  spec.add_development_dependency 'hound-tools', '~> 0.0.4'
 end

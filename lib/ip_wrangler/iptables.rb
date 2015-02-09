@@ -12,81 +12,77 @@ module IpWrangler
 
     def rule_nat_port(public_ip, public_port, private_ip, private_port, protocol)
       [Parameter.destination(public_ip),
-       Parameter.protocol(protocol),
-       Parameter.destination_port(public_port),
-       Parameter.jump('DNAT'),
-       Parameter.to_destination("#{private_ip}:#{private_port}")]
+        Parameter.protocol(protocol),
+        Parameter.destination_port(public_port),
+        Parameter.jump('DNAT'),
+        Parameter.to_destination("#{private_ip}:#{private_port}")]
     end
 
     def rule_nat_ip(public_ip, private_ip)
       rule_dnat = [Parameter.destination(public_ip),
-                   Parameter.jump('DNAT'),
-                   Parameter.to_destination(private_ip)]
+        Parameter.jump('DNAT'),
+        Parameter.to_destination(private_ip)]
       rule_snat = [Parameter.source(private_ip),
-                   Parameter.jump('SNAT'),
-                   Parameter.to(public_ip)]
-
+        Parameter.jump('SNAT'),
+        Parameter.to(public_ip)]
       return rule_dnat, rule_snat
     end
 
     def append_nat_port(public_ip, public_port, private_ip, private_port, protocol)
-      rule = rule_nat_port public_ip, public_port, private_ip, private_port, protocol
+      rule = rule_nat_port(public_ip, public_port, private_ip, private_port, protocol)
 
-      execute Command.check_rule "#{@chain_name}_PRE", 'nat', rule
+      execute(Command.check_rule("#{@chain_name}_PRE", 'nat', rule))
       if $?.exitstatus == 1
-        execute Command.append_rule "#{@chain_name}_PRE", 'nat', rule
+        execute(Command.append_rule("#{@chain_name}_PRE", 'nat', rule))
       end
     end
 
     def append_nat_ip(public_ip, private_ip)
-      rule_dnat, rule_snat = rule_nat_ip public_ip, private_ip
+      rule_dnat, rule_snat = rule_nat_ip(public_ip, private_ip)
 
-      execute Command.check_rule "#{@chain_name}_PRE", 'nat', rule_dnat
+      execute(Command.check_rule("#{@chain_name}_PRE", 'nat', rule_dnat))
       if $?.exitstatus == 1
-        execute Command.append_rule "#{@chain_name}_PRE", 'nat', rule_dnat
+        execute(Command.append_rule("#{@chain_name}_PRE", 'nat', rule_dnat))
       end
-      execute Command.check_rule "#{@chain_name}_POST", 'nat', rule_snat
+      execute(Command.check_rule("#{@chain_name}_POST", 'nat', rule_snat))
       if $?.exitstatus == 1
-        execute Command.append_rule "#{@chain_name}_POST", 'nat', rule_snat
+        execute(Command.append_rule("#{@chain_name}_POST", 'nat', rule_snat))
       end
     end
 
     def delete_nat_port(public_ip, public_port, private_ip, private_port, protocol)
-      rule = rule_nat_port public_ip, public_port, private_ip, private_port, protocol
+      rule = rule_nat_port(public_ip, public_port, private_ip, private_port, protocol)
 
-      command = Command.delete_rule_spec "#{@chain_name}_PRE", rule, 'nat'
-
-      execute command
+      execute(Command.delete_rule_spec("#{@chain_name}_PRE", rule, 'nat'))
     end
 
     def delete_nat_ip(public_ip, private_ip)
-      rule_dnat, rule_snat = rule_nat_ip public_ip, private_ip
+      rule_dnat, rule_snat = rule_nat_ip(public_ip, private_ip)
 
-      command_dnat = Command.delete_rule_spec "#{@chain_name}_PRE", rule_dnat, 'nat'
-      command_snat = Command.delete_rule_spec "#{@chain_name}_POST", rule_snat, 'nat'
-
-      execute command_dnat, command_snat
+      command_dnat = Command.delete_rule_spec("#{@chain_name}_PRE", rule_dnat, 'nat')
+      command_snat = Command.delete_rule_spec("#{@chain_name}_POST", rule_snat, 'nat')
+      execute(command_dnat, command_snat)
     end
 
-    def not_exists_nat_port?(public_ip, public_port, protocol, private_ip, private_port)
+    def not_exists_nat_port?(public_ip, public_port, protocol, _, _)
       command = "#{$iptables_bin_path} -t nat -n -v -L #{@chain_name}_PRE | "\
-                "#{$awk_bin_path} '{print $9, $10, $11, $12}' | "\
-                "#{$grep_bin_path} -i '^#{public_ip} #{protocol} dpt:#{public_port}'"
-      output = IpWrangler::Exec.execute_command command
+        "#{$awk_bin_path} '{print $9, $10, $11, $12}' | "\
+        "#{$grep_bin_path} -i '^#{public_ip} #{protocol} dpt:#{public_port}'"
+      output = IpWrangler::Exec.execute_command(command)
       output.empty?
     end
 
-    def not_exists_nat_ip?(public_ip, private_ip)
+    def not_exists_nat_ip?(public_ip, _)
       command ="#{$iptables_bin_path} -t nat -n -v -L #{@chain_name}_PRE | "\
-               "#{$awk_bin_path} '{print $9, $10}' | "\
-               "#{$grep_bin_path} -i '^#{public_ip}'"
-      output = IpWrangler::Exec.execute_command command
+        "#{$awk_bin_path} '{print $9, $10}' | "\
+        "#{$grep_bin_path} -i '^#{public_ip}'"
+      output = IpWrangler::Exec.execute_command(command)
       output.empty?
     end
 
     def execute(*commands)
       commands.each do |command|
-        IpWrangler::Exec.execute_iptables_command "#{command}"
+        IpWrangler::Exec.execute_iptables_command("#{command}")
       end
     end
 
@@ -95,17 +91,17 @@ module IpWrangler
   class Command
 
     @@commands = {
-        append_rule: '--append',
-        insert_rule: '--insert',
-        replace_rule: '--replace',
-        check_rule: '--check',
-        delete_rule: '--delete',
-        new_chain: '--new-chain',
-        rename_chain: '--rename-chain',
-        policy_chain: '--policy',
-        zero_chain: '--zero',
-        flush_chain: '--flush',
-        delete_chain: '--delete-chain',
+      append_rule: '--append',
+      insert_rule: '--insert',
+      replace_rule: '--replace',
+      check_rule: '--check',
+      delete_rule: '--delete',
+      new_chain: '--new-chain',
+      rename_chain: '--rename-chain',
+      policy_chain: '--policy',
+      zero_chain: '--zero',
+      flush_chain: '--flush',
+      delete_chain: '--delete-chain',
     }
 
     def self.parameters_to_s(parameters)
@@ -167,16 +163,16 @@ module IpWrangler
   class Parameter
 
     @@parameters = {
-        protocol: '--protocol',
-        source: '--source',
-        destination: '--destination',
-        source_port: '--source-port',
-        destination_port: '--destination-port',
-        in_interface: '--in-interface',
-        out_interface: '--out-interface',
-        to_destination: '--to-destination',
-        to: '--to',
-        jump: '--jump',
+      protocol: '--protocol',
+      source: '--source',
+      destination: '--destination',
+      source_port: '--source-port',
+      destination_port: '--destination-port',
+      in_interface: '--in-interface',
+      out_interface: '--out-interface',
+      to_destination: '--to-destination',
+      to: '--to',
+      jump: '--jump',
     }
 
     def initialize(name, value = nil)

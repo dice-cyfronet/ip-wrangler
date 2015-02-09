@@ -1,0 +1,20 @@
+log_file_path: ipt_wr_app.log
+db_name: ipt.db
+
+username: username
+password: password
+
+iptables_chain_name: IPT_WR
+
+ext_ip: 10.0.0.1
+port_ip: 10.0.0.1
+port_start: 1024
+port_stop: 2048
+
+# Example of IP list
+#ip:
+#  - 10.0.0.2
+#  - 10.0.0.3
+#  - 10.0.0.4
+
+ip:

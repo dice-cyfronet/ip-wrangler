@@ -1,0 +1,60 @@
+#!/bin/bash
+
+export __dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export __dir="$(dirname ${__dir})"
+
+pushd ${__dir}/lib 2>&1 >> /dev/null
+    echo "For more information, check: https://github.com/dice-cyfronet/ip-wrangler#configuration"
+
+    echo "====="
+
+    cp -i config.yml.example config.yml
+
+    __username="$(cat config.yml | grep username: | awk '{print $2}')"
+    __password="$(cat config.yml | grep password: | awk '{print $2}')"
+    __ext_ip="$(cat config.yml | grep ext_ip: | awk '{print $2}')"
+    __port_ip="$(cat config.yml | grep port_ip: | awk '{print $2}')"
+    __port_start="$(cat config.yml | grep port_start: | awk '{print $2}')"
+    __port_stop="$(cat config.yml | grep port_stop: | awk '{print $2}')"
+
+    echo "====="
+
+    echo "HTTP Username (current value: \"${__username}\", leave empty to use the same)"
+    read __new_username
+    echo "HTTP Password (current value: \"${__password}\", leave empty to use the same)"
+    read __new_password
+    echo "External IP address user for NAT port. If your server is indicated by a different address than that assigned to the interface, enter it here. (current value: \"${__ext_ip}\", leave empty to use the same)"
+    read __new_ext_ip
+    echo "Public IP address used for NAT port. Enter address which is assigned to the interface. (current value: \"${__port_ip}\", leave empty to use the same)"
+    read __new_port_ip
+    echo "Begin of available port for NAT (current value: \"${__port_start}\")"
+    read __new_port_start
+    echo "End of available port for NAT (current value: \"${__port_stop}\")"
+    read __new_port_stop
+    echo "To update list of public IP used for NAT IP, use your favorite text editor, to edit \`config.yml\`"
+
+    if [ ! -z "${__new_username}" ] && [ "${__username}" != "${__new_username}" ]; then
+        sed -i "s/username:.*/username: ${__new_username}/g" config.yml
+    fi
+    if [ ! -z "${__new_password}" ] && [ "${__password}" != "${__new_password}" ]; then
+        sed -i "s/password:.*/password: ${__new_password}/g" config.yml
+    fi
+    if [ ! -z "${__new_ext_ip}" ] && [ "${__new_ext_ip}" != "${__ext_ip}" ]; then
+        sed -i "s/ext_ip:.*/ext_ip: ${__new_ext_ip}/g" config.yml
+    fi
+    if [ ! -z "${__new_port_ip}" ] && [ "${__new_port_ip}" != "${__port_ip}" ]; then
+        sed -i "s/port_ip:.*/port_ip: ${__new_port_ip}/g" config.yml
+    fi
+    if [ ! -z "${__new_port_start}" ] && [ "${__new_port_start}" != "${__port_start}" ]; then
+        sed -i "s/port_start:.*/port_start: ${__new_port_start}/g" config.yml
+    fi
+    if [ ! -z "${__new_port_stop}" ] && [ "${__new_port_stop}" != "${__port_stop}" ]; then
+        sed -i "s/port_stop:.*/port_stop: ${__new_port_stop}/g" config.yml
+    fi
+
+    echo "====="
+    echo "Show config.yml"
+    echo "-----"
+    cat config.yml
+
+popd 2>&1 >> /dev/null
