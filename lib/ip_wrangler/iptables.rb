@@ -25,7 +25,7 @@ module IpWrangler
       rule_snat = [Parameter.source(private_ip),
                    Parameter.jump('SNAT'),
                    Parameter.to(public_ip)]
-      rule_dnat, rule_snat
+      return rule_dnat, rule_snat
     end
 
     def append_nat_port(public_ip, public_port, private_ip, private_port, protocol)

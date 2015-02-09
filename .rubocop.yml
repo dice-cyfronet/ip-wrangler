@@ -3,3 +3,7 @@ AllCops:
 
 Metrics/LineLength:
   Max: 99
+
+StringLiterals:
+  EnforcedStyle: single_quotes
+  Enabled: true
