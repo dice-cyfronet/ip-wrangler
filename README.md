@@ -40,13 +40,15 @@ Install `ruby` and `bundler` (as root, **optional**):
     popd
     popd
 
-#### Permissions
+Install this software (as non-root):
 
-Create a user account which will be used to run `ipwrangler` (as root):
+    git clone https://github.com/dice-cyfronet/ip-wrangler.git
 
-    adduser user_name
+Install gems (as non-root, inside project directory):
 
-Add created user to `sudo` group (as root):
+    bundle install --path vendor/bundle
+
+Add `user_name` to `sudo` group (as root):
 
     adduser user_name sudo
 
@@ -62,48 +64,99 @@ where:
 
 * `host_name` comes from `/etc/hostname`
 
-### Installation
+Enable upstart for non-root user (as root):
 
-Download source archive or clone repository from the `master` branch.
+    nano /etc/dbus-1/system.d/Upstart.conf
 
-Download archive (as non-root):
+It should looks like this:
 
-    wget --no-check-certificate https://github.com/dice-cyfronet/ip-wrangler/archive/master.zip
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <!DOCTYPE busconfig PUBLIC
+      "-//freedesktop//DTD D-BUS Bus Configuration 1.0//EN"
+      "http://www.freedesktop.org/standards/dbus/1.0/busconfig.dtd">
+    
+    <busconfig>
+      <!-- Only the root user can own the Upstart name -->
+      <policy user="root">
+        <allow own="com.ubuntu.Upstart" />
+      </policy>
+    
+      <!-- Allow any user to invoke all of the methods on Upstart, its jobs
+           or their instances, and to get and set properties - since Upstart
+           isolates commands by user. -->
+      <policy context="default">
+        <allow send_destination="com.ubuntu.Upstart"
+           send_interface="org.freedesktop.DBus.Introspectable" />
+        <allow send_destination="com.ubuntu.Upstart"
+           send_interface="org.freedesktop.DBus.Properties" />
+        <allow send_destination="com.ubuntu.Upstart"
+           send_interface="com.ubuntu.Upstart0_6" />
+        <allow send_destination="com.ubuntu.Upstart"
+           send_interface="com.ubuntu.Upstart0_6.Job" />
+        <allow send_destination="com.ubuntu.Upstart"
+           send_interface="com.ubuntu.Upstart0_6.Instance" />
+      </policy>
+    </busconfig>
 
-Clone repository (as non-root):
+Install *Upstart* scripts (as non-root):
 
-    GIT_SSL_NO_VERIFY=1 git clone -b master https://github.com/dice-cyfronet/ip-wrangler.git
+    mkdir -p ${HOME}/.init
+    cp -i ./support/upstart/*.conf ${HOME}/.init/
 
-The following commands should be execute as `user_name` in the root directory of the project.
+Set proper directory for `ip-wrangler/` and `ip-wrangler/log/`:
 
-Install required bundles and configure `ipwrangler` (as non-root):
+    nano ${HOME}/.init/ip-wrangler.conf
+    nano ${HOME}/.init/ip-wrangler-thin.conf
 
-    bundle install --deployment
-    rake configure
+Update profile files (eg. `.bash_profile`):
+
+    cat >> ${HOME}/.bash_profile <<EOL
+    if [ ! -f /var/run/user/\$(id -u)/upstart/sessions/*.session ]
+    then
+        /sbin/init --user --confdir \${HOME}/.init &
+    fi
+    
+    if [ -f /var/run/user/\$(id -u)/upstart/sessions/*.session ]
+    then
+       export \$(cat /var/run/user/\$(id -u)/upstart/sessions/*.session)
+    fi
+    EOL
+
+You need to re-login to apply changes in ${HOME}/.bash_profile
+
+### Configuration
+
+Before you start, configure *migratio* installation by executing short wizard:
+
+    bin/ip-wrangler-configure
+
+You may edit manually configuration file `lib/config.yml`.
 
 ### Run
 
 When launching for the first time, run the application in the foreground:
 
-    rake rundevel
+    bin/ip-wrangler-start -F
 
 Verify that everything is okay.
 
-Subsequently the application can be run in the background:
+Application can be run in the background:
 
-    rake run
+    bin/ip-wrangler-start
 
-To stop `ipwrangler` running in the background:
+To stop `ipwrangler` which runs in the background:
 
-    rake stop
+    bin/ip-wrangler-stop
 
 To clean rules created by `ipwrangler` in `iptables`:
 
-    user_name@host_name $ rake clean
+    bin/ip-wrangler-clean <prefix>
 
-To purge the entire `ipwrangler` database and settings:
+To purge the entire `ipwrangler` database, settings and logs
 
-    user_name@host_name $ rake purge
+    bin/ip-wrangler-purge
+
+You can use *upstart* to start and stop *migratio*.
 
 ### Log'n'roll
 
@@ -187,3 +240,12 @@ Deleting:
 * `DELETE /dnat/<private_ip>/<private_port>/<protocol>` - delete NAT port with specified protocol for specified private IP
 * `DELETE /dnat/<private_ip>/<private_port>` - delete NAT port for specified IP
 * `DELETE /dnat/<private_ip>` - delete any NAT port for specified IP
+
+## Contributing
+
+1. Fork it!
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create a new *Pull Request*
+
