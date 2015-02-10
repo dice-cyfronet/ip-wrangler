@@ -33,24 +33,20 @@ pushd ${__dir}/lib 2>&1 >> /dev/null
     read __new_port_stop
     echo "To update list of public IP used for NAT IP, use your favorite text editor, to edit \`config.yml\`"
 
-    if [ ! -z "${__new_username}" ] && [ "${__username}" != "${__new_username}" ]; then
-        sed -i "s/username:.*/username: ${__new_username}/g" config.yml
-    fi
-    if [ ! -z "${__new_password}" ] && [ "${__password}" != "${__new_password}" ]; then
-        sed -i "s/password:.*/password: ${__new_password}/g" config.yml
-    fi
-    if [ ! -z "${__new_ext_ip}" ] && [ "${__new_ext_ip}" != "${__ext_ip}" ]; then
-        sed -i "s/ext_ip:.*/ext_ip: ${__new_ext_ip}/g" config.yml
-    fi
-    if [ ! -z "${__new_port_ip}" ] && [ "${__new_port_ip}" != "${__port_ip}" ]; then
-        sed -i "s/port_ip:.*/port_ip: ${__new_port_ip}/g" config.yml
-    fi
-    if [ ! -z "${__new_port_start}" ] && [ "${__new_port_start}" != "${__port_start}" ]; then
-        sed -i "s/port_start:.*/port_start: ${__new_port_start}/g" config.yml
-    fi
-    if [ ! -z "${__new_port_stop}" ] && [ "${__new_port_stop}" != "${__port_stop}" ]; then
-        sed -i "s/port_stop:.*/port_stop: ${__new_port_stop}/g" config.yml
-    fi
+    function check_and_replace() {
+        __new_value="__new_${1}"
+        __value="__${1}"
+        if [ ! -z "${!__new_value}" ] && [ "${!__value}" != "${!__new_value}" ]; then
+            sed -i "s/${1}:.*/${1}: ${!__new_value}/g" config.yml
+        fi
+    }
+
+    check_and_replace username
+    check_and_replace password
+    check_and_replace ext_ip
+    check_and_replace port_ip
+    check_and_replace port_start
+    check_and_replace port_stop
 
     echo "====="
     echo "Show config.yml"
