@@ -1,12 +1,13 @@
-$config = YAML.load_file('./config.yml')
+config_file = ENV['__config_file']
+$config = YAML.load_file(config_file)
 
 use Rack::Auth::Basic, 'Restricted Area' do |username, password|
   [username, password] == [$config['username'], $config['password']]
 end
 
-$logger = Logger.new(STDOUT)
+$logger = Logger.new("#{$config['log_dir']}/app_output.log", 'a')
 
-$nat = IpWrangler::NAT.new($config, './' + $config['db_name'], $config['iptables_chain_name'], $logger)
+$nat = IpWrangler::NAT.new($config, $logger)
 
 def sandbox(&block)
   begin

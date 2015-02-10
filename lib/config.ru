@@ -15,35 +15,37 @@ require './ip_wrangler/iptables'
 require './ip_wrangler/nat'
 require './ip_wrangler/exec'
 
-log_directory='../log'
-config_directory='./'
+unless ENV.has_key?('__config_file')
+  puts 'No config file. Exiting.'
+  exit(1)
+end
+
+config_file = ENV['__config_file']
+
+unless File.file?(config_file)
+  puts "#{config_file} not found. Exiting."
+  exit(2)
+end
+
+config = YAML.load_file(config_file)
 
 unless ENV.has_key?('__no_log')
-  console_logger = File.new("#{log_directory}/thin_output.log", 'w')
+  console_logger = File.new("#{config['log_dir']}/thin_output.log", 'a')
 
   STDOUT.reopen(console_logger)
   STDERR.reopen(console_logger)
 end
 
-puts 'Checking if config.yml is existing...'
+puts "Checking if #{config['db_path']} is existing..."
 
-unless File.file?("#{config_directory}/config.yml")
-  puts 'No config.yml file found. Exiting.'
-  exit(1)
-end
-
-config = YAML.load_file("#{config_directory}/config.yml")
-
-puts "Checking if #{config['db_name']} is existing..."
-
-unless File.file?(config['db_name'])
-  puts "Create #{config['db_name']}"
-  FileUtils.touch(config['db_name'])
+unless File.file?(config['db_path'])
+  puts "Create #{config['db_path']}"
+  FileUtils.touch(config['db_path'])
 end
 
 puts 'Checking database...'
 
-db = Sequel.connect("sqlite://#{config_directory}/#{config['db_name']}")
+db = Sequel.connect("sqlite://#{config['db_path']}")
 
 unless db.table_exists?(:nat_ports)
   puts 'No nat_ports table. Creating it...'

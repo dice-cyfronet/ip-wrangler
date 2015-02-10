@@ -2,10 +2,10 @@ module IpWrangler
   class NAT
     $lsof_bin_path = '/usr/bin/sudo /usr/bin/lsof'
 
-    def initialize(config, db_name, chain_name, logger)
+    def initialize(config, logger)
       @config = config
-      @db = DB.new(db_name, logger)
-      @iptables = Iptables.new(chain_name, logger)
+      @db = DB.new(config['db_path'], logger)
+      @iptables = Iptables.new($config['iptables_chain_name'], logger)
       @logger = logger
 
       @db.select_nat_port.each do |nat_port|

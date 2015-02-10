@@ -16,5 +16,3 @@ sudo /sbin/iptables -t nat --flush ${iptables_chain_name}_PRE
 sudo /sbin/iptables -t nat --flush ${iptables_chain_name}_POST
 sudo /sbin/iptables -t nat --delete-chain ${iptables_chain_name}_PRE
 sudo /sbin/iptables -t nat --delete-chain ${iptables_chain_name}_POST
-
-exit 0
