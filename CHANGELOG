@@ -1,2 +1,8 @@
+v 0.0.1
+  - Migrate to gem structure
+  - Update documentation
+  - Add installation, configuration and services scripts
+
 v 0.0.0
   - Init
+
