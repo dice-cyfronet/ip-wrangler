@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+name = 'ip-wrangler'
+g = Gem::Specification.find_by_name(name)
+system(File.join(g.full_gem_path, 'bin/ip-wrangler-clean.sh'))
