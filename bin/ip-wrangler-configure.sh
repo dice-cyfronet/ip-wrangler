@@ -49,7 +49,7 @@ pushd ${__dir}/lib 2>&1 >> /dev/null
     check_and_replace port_stop
 
     echo "====="
-    echo "Show config.yml"
+    echo "Show ${__dir}/lib/config.yml. You may edit this file to add IP which will use to IP mapping."
     echo "-----"
     cat config.yml
 

@@ -34,10 +34,10 @@ module IpWrangler
       port = @db.get_first_empty_nat_port(protocol)
       if port
         public_port = port[:public_port]
-        if not_used_port?(@config[:port_ip], public_port, protocol) &&
-           @iptables.not_exists_nat_port?(@config[:port_ip], public_port,
+        if not_used_port?(@config['port_ip'], public_port, protocol) &&
+           @iptables.not_exists_nat_port?(@config['port_ip'], public_port,
                                           protocol, private_ip, private_port)
-          return @config[:port_ip], public_port
+          return @config['port_ip'], public_port
         end
       end
       nil
