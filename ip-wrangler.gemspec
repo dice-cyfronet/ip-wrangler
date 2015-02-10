@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'ip_wrangler/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'ipwrangler'
+  spec.name          = 'ip-wrangler'
   spec.version       = IpWrangler::VERSION
   spec.authors       = ['Paweł Suder']
   spec.email         = ['pawel@suder.info']
@@ -18,14 +18,14 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'sinatra'
-  spec.add_dependency 'thin'
+  spec.add_dependency 'sinatra', '~> 1.4'
+  spec.add_dependency 'thin', '~> 1.6'
 
-  spec.add_dependency 'sequel'
-  spec.add_dependency 'sqlite3'
+  spec.add_dependency 'sequel', '~> 4.19'
+  spec.add_dependency 'sqlite3', '~> 1.3'
 
-  spec.add_dependency 'json'
+  spec.add_dependency 'json', '~> 1.8'
 
-  spec.add_development_dependency 'bundler'
-  spec.add_development_dependency 'rake'
+  spec.add_development_dependency 'bundler', '~> 1.6'
+  spec.add_development_dependency 'rake', '~> 10.4'
 end
