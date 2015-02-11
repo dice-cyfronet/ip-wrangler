@@ -1,16 +1,16 @@
 ## Init.d
 
-Download [`ip-wrangler`](https://github.com/dice-cyfronet/ip-wrangler/support/initd/ip-wrangler)
+Download [`ip-wrangler`](https://github.com/dice-cyfronet/ip-wrangler/blob/master/support/initd/ip-wrangler)
 into `/etc/init.d/ip-wrangler`.
 
-    wget -O /etc/init.d/ip-wrangler https://raw.githubusercontent.com/dice-cyfronet/ip-wrangler/support/initd/ip-wrangler
+    wget -O /etc/init.d/ip-wrangler https://raw.githubusercontent.com/dice-cyfronet/ip-wrangler/master/support/initd/ip-wrangler
     chmod +x /etc/init.d/ip-wrangler
 
 Create directories:
 
     mkdir /var/log/ip-wrangler /etc/ip-wrangler
 
-Create configuration file (as root) in `/etc/ip-wrangler/ip-wrangler.yml` by
+Create configuration file in `/etc/ip-wrangler/ip-wrangler.yml` by
 
     ip-wrangler-configure /etc/ip-wrangler/ip-wrangler.yml
 
