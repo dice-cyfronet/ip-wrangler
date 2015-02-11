@@ -2,6 +2,7 @@
 
 [![Code Climate](https://codeclimate.com/github/dice-cyfronet/ip-wrangler/badges/gpa.svg)](https://codeclimate.com/github/dice-cyfronet/ip-wrangler)
 [![Dependency Status](https://gemnasium.com/dice-cyfronet/ip-wrangler.svg)](https://gemnasium.com/dice-cyfronet/ip-wrangler)
+[![Gem Version](https://badge.fury.io/rb/ip-wrangler.svg)](http://badge.fury.io/rb/ip-wrangler)
 
 In polish __Portostawiaczka__
 
