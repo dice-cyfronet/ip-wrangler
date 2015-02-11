@@ -16,7 +16,7 @@ echo "For more information, check: https://github.com/dice-cyfronet/ip-wrangler#
 echo "====="
 
 echo "Would like to override config with default settings?"
-cp -i ${__dir}/config.yml.example ${path_to_config_file}
+cp -i ${__dir}/lib/config.yml.example ${path_to_config_file}
 
 __log_dir="$(cat ${path_to_config_file} | grep log_dir: | awk '{print $2}')"
 __db_path="$(cat ${path_to_config_file} | grep db_path: | awk '{print $2}')"
@@ -58,7 +58,7 @@ function check_and_replace() {
     __new_value="__new_${1}"
     __value="__${1}"
     if [ ! -z "${!__new_value}" ] && [ "${!__value}" != "${!__new_value}" ]; then
-        sed -i "s/${1}:.*/${1}: ${!__new_value}/g" ${path_to_config_file}
+        sed -i "s#${1}:.*#${1}: ${!__new_value}#g" ${path_to_config_file}
     fi
 }
 

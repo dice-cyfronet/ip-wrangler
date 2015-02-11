@@ -20,6 +20,7 @@ while getopts 'c:P:i:p:t:Fh' __flag; do
     P)
         touch ${OPTARG}
         export __pid_file="$(realpath ${OPTARG})"
+        rm ${OPTARG}
         ;;
     i)
         export __ip=${OPTARG}

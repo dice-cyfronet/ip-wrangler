@@ -5,7 +5,7 @@ use Rack::Auth::Basic, 'Restricted Area' do |username, password|
   [username, password] == [$config['username'], $config['password']]
 end
 
-$logger = Logger.new("#{$config['log_dir']}/app_output.log", 'a')
+$logger = Logger.new("#{$config['log_dir']}/app_output.log")
 
 $nat = IpWrangler::NAT.new($config, $logger)
 
