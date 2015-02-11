@@ -5,7 +5,7 @@ export __dir="$(dirname ${__dir})"
 
 if [ -z "$1" ]
 then
-    echo "Usage: $(basename $0) <path_to_config_file>"
+    echo "Usage: $(basename $0) <path_to_config_file:maybe:config.yml>"
     exit 1
 fi
 
@@ -15,7 +15,7 @@ echo "For more information, check: https://github.com/dice-cyfronet/ip-wrangler#
 
 echo "====="
 
-echo "Would like to override config with default settings?"
+echo "Would like to override your current config with the default settings?"
 cp -i ${__dir}/lib/config.yml.example ${path_to_config_file}
 
 __log_dir="$(cat ${path_to_config_file} | grep log_dir: | awk '{print $2}')"
@@ -43,16 +43,16 @@ read __new_password
 echo "Iptables chains prefix (current value: \"${__iptables_chain_name}\", leave empty to use the same)"
 read __new_iptables_chain_name
 
-echo "External IP address user for NAT port. If your server is indicated by a different address than that assigned to the interface, enter it here. (current value: \"${__ext_ip}\", leave empty to use the same)"
+echo "External IP address user for NAT port. If your server is indicated by a different address than assigned to the outside interface, enter it here. (current value: \"${__ext_ip}\", leave empty to use the same)"
 read __new_ext_ip
-echo "Public IP address used for NAT port. Enter address which is assigned to the interface. (current value: \"${__port_ip}\", leave empty to use the same)"
+echo "Public IP address used for NAT port. Enter address which is assigned to the outside interface. (current value: \"${__port_ip}\", leave empty to use the same)"
 read __new_port_ip
-echo "Begin of available port for NAT (current value: \"${__port_start}\")"
+echo "First port in range of available ports for NAT (current value: \"${__port_start}\")"
 read __new_port_start
-echo "End of available port for NAT (current value: \"${__port_stop}\")"
+echo "Last port in range of available ports for NAT (current value: \"${__port_stop}\")"
 read __new_port_stop
 
-echo "To update list of public IP used for NAT IP, use your favorite text editor, to edit \`${path_to_config_file}\`"
+echo "To update list of public IP used for NAT IP use your favorite text editor to edit \`${path_to_config_file}\`"
 
 function check_and_replace() {
     __new_value="__new_${1}"

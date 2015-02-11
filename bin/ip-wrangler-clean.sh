@@ -2,7 +2,7 @@
 
 if [ -z "$1" ]
 then
-    echo "Usage: $(basename $0) <iptables_prefix_chain_name>"
+    echo "Usage: $(basename $0) <iptables_chain_name|maybe:IPT_WR>"
     exit 1
 fi
 

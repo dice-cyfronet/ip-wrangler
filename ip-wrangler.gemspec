@@ -6,8 +6,8 @@ require 'ip_wrangler/version'
 Gem::Specification.new do |spec|
   spec.name          = 'ip-wrangler'
   spec.version       = IpWrangler::VERSION
-  spec.authors       = ['Paweł Suder']
-  spec.email         = ['pawel@suder.info']
+  spec.authors       = ['Paweł Suder', 'Jan Meizner', 'Bartosz Wilk']
+  spec.email         = ['pawel@suder.info', 'j.meizner@cyfronet.pl', 'b.wilk@cyfronet.pl']
   spec.description   = %q{Iptables DNAT manager}
   spec.summary       = %q{Service is responsible for managing DNAT rules in iptables nat table}
   spec.homepage      = 'https://github.com/dice-cyfronet/ip-wrangler'

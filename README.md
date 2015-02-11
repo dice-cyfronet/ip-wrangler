@@ -5,7 +5,11 @@
 
 In polish __Portostawiaczka__
 
-This application manages DNAT port mappings and IP mappings for Virtual Machiness (behind the NAT). It needs to be run on a node which is a router for Virtual Machines. It provides an API reachable via HTTP URL (`GET`, `POST`, `DELETE`) which allows the user to perform changes on `iptables` `nat` tables. It manages a pool of used and empty port mappings or IP mappings using an SQLite database.
+This application manages DNAT port mappings and IP mappings for Virtual Machines
+(behind the NAT). It needs to be run on a node which is a router for Virtual
+Machines. It provides an API reachable via HTTP URL (`GET`, `POST`, `DELETE`)
+which allows the user to perform changes on `iptables` `nat` tables. It manages
+a pool of used and empty port mappings or IP mappings using an SQLite database.
 
 ## Installation
 
@@ -40,123 +44,50 @@ Install `ruby` and `bundler` (as root, **optional**):
     popd
     popd
 
-Install this software (as non-root):
+Install this software:
 
-    git clone https://github.com/dice-cyfronet/ip-wrangler.git
+    gem install ip-wrangler
 
-Install gems (as non-root, inside project directory):
-
-    bundle install --path vendor/bundle
-
-Add `user_name` to `sudo` group (as root):
+Add `user_name` (which will start `ip-wrangler`) to `sudo` group (as root):
 
     adduser user_name sudo
 
-To enable `iptables` and `lsof` for user `user_name` modify `/etc/sudoers` (as root):
-
-    visudo
-
-Add the following line at the bottom of the file:
+To enable `iptables` and `lsof` for user `user_name` modify `/etc/sudoers` (as root)
+using `visudo`. Add the following line at the bottom of the file:
 
     user_name host_name= NOPASSWD: /sbin/iptables, /usr/bin/lsof
 
-where:
-
-* `host_name` comes from `/etc/hostname`
-
-Enable upstart for non-root user (as root):
-
-    nano /etc/dbus-1/system.d/Upstart.conf
-
-It should looks like this:
-
-    <?xml version="1.0" encoding="UTF-8" ?>
-    <!DOCTYPE busconfig PUBLIC
-      "-//freedesktop//DTD D-BUS Bus Configuration 1.0//EN"
-      "http://www.freedesktop.org/standards/dbus/1.0/busconfig.dtd">
-    
-    <busconfig>
-      <!-- Only the root user can own the Upstart name -->
-      <policy user="root">
-        <allow own="com.ubuntu.Upstart" />
-      </policy>
-    
-      <!-- Allow any user to invoke all of the methods on Upstart, its jobs
-           or their instances, and to get and set properties - since Upstart
-           isolates commands by user. -->
-      <policy context="default">
-        <allow send_destination="com.ubuntu.Upstart"
-           send_interface="org.freedesktop.DBus.Introspectable" />
-        <allow send_destination="com.ubuntu.Upstart"
-           send_interface="org.freedesktop.DBus.Properties" />
-        <allow send_destination="com.ubuntu.Upstart"
-           send_interface="com.ubuntu.Upstart0_6" />
-        <allow send_destination="com.ubuntu.Upstart"
-           send_interface="com.ubuntu.Upstart0_6.Job" />
-        <allow send_destination="com.ubuntu.Upstart"
-           send_interface="com.ubuntu.Upstart0_6.Instance" />
-      </policy>
-    </busconfig>
-
-Install *Upstart* scripts (as non-root):
-
-    mkdir -p ${HOME}/.init
-    cp -i ./support/upstart/*.conf ${HOME}/.init/
-
-Set proper directory for `ip-wrangler/` and `ip-wrangler/log/`:
-
-    nano ${HOME}/.init/ip-wrangler.conf
-    nano ${HOME}/.init/ip-wrangler-thin.conf
-
-Update profile files (eg. `.bash_profile`):
-
-    cat >> ${HOME}/.bash_profile <<EOL
-    if [ ! -f /var/run/user/\$(id -u)/upstart/sessions/*.session ]
-    then
-        /sbin/init --user --confdir \${HOME}/.init &
-    fi
-    
-    if [ -f /var/run/user/\$(id -u)/upstart/sessions/*.session ]
-    then
-       export \$(cat /var/run/user/\$(id -u)/upstart/sessions/*.session)
-    fi
-    EOL
-
-You need to re-login to apply changes in ${HOME}/.bash_profile
+`host_name` must be the same like in `/etc/hostname`.
 
 ### Configuration
 
 Before you start, configure *migratio* installation by executing short wizard:
 
-    bin/ip-wrangler-configure
+    ip-wrangler-configure ./config.yml
 
-You may edit manually configuration file `lib/config.yml`.
+You may edit manually configuration file, eg. `config.yml`.
 
 ### Run
 
 When launching for the first time, run the application in the foreground:
 
-    bin/ip-wrangler-start -F
+    ip-wrangler-start -c ./config.yml -F
 
 Verify that everything is okay.
 
 Application can be run in the background:
 
-    bin/ip-wrangler-start
+    ip-wrangler-start -c ./config.yml -P ./ip-wrangler.pid
 
 To stop `ipwrangler` which runs in the background:
 
-    bin/ip-wrangler-stop
+    ip-wrangler-stop -P ./ip-wrangler.pid
 
 To clean rules created by `ipwrangler` in `iptables`:
 
-    bin/ip-wrangler-clean <prefix>
+    ip-wrangler-clean <iptables_chain_name|maybe:IPT_WR>
 
-To purge the entire `ipwrangler` database, settings and logs
-
-    bin/ip-wrangler-purge
-
-You can use *upstart* to start and stop *migratio*.
+You can use *init.d* scripts to start and stop *migratio* automatic. Check [`initd.md`](support/initd.md)
 
 ### Log'n'roll
 

@@ -5,11 +5,11 @@ export __dir=$( dirname ${__dir} )
 
 export __port=8400
 export __ip=0.0.0.0
-export __tag=IptWr
+export __tag=IpWrangler
 export __daemon=-d
 
 function usage() {
-    echo "Usage: $(basename $0) -c <config_file> -P <pid_file> -i <ip> -p <port> -t <tag> -F (foreground mode) -h (help and exit)"
+    echo "Usage: $(basename $0) -c <config_file|maybe:config.yml> -P <pid_file|maybe:ip-wrangler.pid> -i <ip|default:0.0.0.0> -p <port|default:8400> -t <tag|default:IpWrangler> -F (foreground mode) -h (help and exit)"
 }
 
 while getopts 'c:P:i:p:t:Fh' __flag; do

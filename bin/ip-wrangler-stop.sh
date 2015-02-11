@@ -4,7 +4,7 @@ export __dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export __dir=$( dirname ${__dir} )
 
 function usage() {
-    echo "Usage: $(basename $0) -P <pid_file> -h (help and exit)"
+    echo "Usage: $(basename $0) -P <pid_file|maybe:ip-wrangler.pid> -h (help and exit)"
 }
 
 while getopts 'P:h' __flag; do
