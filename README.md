@@ -5,7 +5,11 @@
 
 In polish __Portostawiaczka__
 
-This application manages DNAT port mappings and IP mappings for Virtual Machiness (behind the NAT). It needs to be run on a node which is a router for Virtual Machines. It provides an API reachable via HTTP URL (`GET`, `POST`, `DELETE`) which allows the user to perform changes on `iptables` `nat` tables. It manages a pool of used and empty port mappings or IP mappings using an SQLite database.
+This application manages DNAT port mappings and IP mappings for Virtual Machines
+(behind the NAT). It needs to be run on a node which is a router for Virtual
+Machines. It provides an API reachable via HTTP URL (`GET`, `POST`, `DELETE`)
+which allows the user to perform changes on `iptables` `nat` tables. It manages
+a pool of used and empty port mappings or IP mappings using an SQLite database.
 
 ## Installation
 
@@ -40,70 +44,50 @@ Install `ruby` and `bundler` (as root, **optional**):
     popd
     popd
 
-#### Permissions
+Install this software:
 
-Create a user account which will be used to run `ipwrangler` (as root):
+    gem install ip-wrangler
 
-    adduser user_name
-
-Add created user to `sudo` group (as root):
+Add `user_name` (which will start `ip-wrangler`) to `sudo` group (as root):
 
     adduser user_name sudo
 
-To enable `iptables` and `lsof` for user `user_name` modify `/etc/sudoers` (as root):
-
-    visudo
-
-Add the following line at the bottom of the file:
+To enable `iptables` and `lsof` for user `user_name` modify `/etc/sudoers` (as root)
+using `visudo`. Add the following line at the bottom of the file:
 
     user_name host_name= NOPASSWD: /sbin/iptables, /usr/bin/lsof
 
-where:
+`host_name` must be the same like in `/etc/hostname`.
 
-* `host_name` comes from `/etc/hostname`
+### Configuration
 
-### Installation
+Before you start, configure *migratio* installation by executing short wizard:
 
-Download source archive or clone repository from the `master` branch.
+    ip-wrangler-configure ./config.yml
 
-Download archive (as non-root):
-
-    wget --no-check-certificate https://github.com/dice-cyfronet/ip-wrangler/archive/master.zip
-
-Clone repository (as non-root):
-
-    GIT_SSL_NO_VERIFY=1 git clone -b master https://github.com/dice-cyfronet/ip-wrangler.git
-
-The following commands should be execute as `user_name` in the root directory of the project.
-
-Install required bundles and configure `ipwrangler` (as non-root):
-
-    bundle install --deployment
-    rake configure
+You may edit manually configuration file, eg. `config.yml`.
 
 ### Run
 
 When launching for the first time, run the application in the foreground:
 
-    rake rundevel
+    ip-wrangler-start -c ./config.yml -F
 
 Verify that everything is okay.
 
-Subsequently the application can be run in the background:
+Application can be run in the background:
 
-    rake run
+    ip-wrangler-start -c ./config.yml -P ./ip-wrangler.pid
 
-To stop `ipwrangler` running in the background:
+To stop `ipwrangler` which runs in the background:
 
-    rake stop
+    ip-wrangler-stop -P ./ip-wrangler.pid
 
 To clean rules created by `ipwrangler` in `iptables`:
 
-    user_name@host_name $ rake clean
+    ip-wrangler-clean <iptables_chain_name|maybe:IPT_WR>
 
-To purge the entire `ipwrangler` database and settings:
-
-    user_name@host_name $ rake purge
+You can use *init.d* scripts to start and stop *migratio* automatic. Check [`initd.md`](support/initd.md)
 
 ### Log'n'roll
 
@@ -187,3 +171,12 @@ Deleting:
 * `DELETE /dnat/<private_ip>/<private_port>/<protocol>` - delete NAT port with specified protocol for specified private IP
 * `DELETE /dnat/<private_ip>/<private_port>` - delete NAT port for specified IP
 * `DELETE /dnat/<private_ip>` - delete any NAT port for specified IP
+
+## Contributing
+
+1. Fork it!
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create a new *Pull Request*
+

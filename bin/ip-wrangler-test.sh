@@ -5,8 +5,8 @@
 export __IP="127.0.0.1"
 export __PORT=8400
 
-export __USER=test
-export __PASS=test
+export __USER=username
+export __PASS=password
 
 if (( "$#" >= "1" )); then
     export __IP=$1

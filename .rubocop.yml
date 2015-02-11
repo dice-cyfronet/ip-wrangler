@@ -1,8 +1,9 @@
-inherit_from:
-  - .hound/defaults.yml
-  - .hound/overrides.yml
-  - .rubocop_todo.yml
-
-# Rails cops (so we don't need to run with -R option)
 AllCops:
   RunRailsCops: true
+
+Metrics/LineLength:
+  Max: 99
+
+StringLiterals:
+  EnforcedStyle: single_quotes
+  Enabled: true
