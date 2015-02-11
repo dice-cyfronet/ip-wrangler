@@ -2,7 +2,7 @@
 
 if [ -z "$1" ]
 then
-    echo "Usage: $0 <iptables_prefix_chain_name>"
+    echo "Usage: $(basename $0) <iptables_prefix_chain_name>"
     exit 1
 fi
 

@@ -5,7 +5,7 @@ export __dir="$(dirname ${__dir})"
 
 if [ -z "$1" ]
 then
-    echo "Usage: $0 <path_to_config_file>"
+    echo "Usage: $(basename $0) <path_to_config_file>"
     exit 1
 fi
 

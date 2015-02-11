@@ -9,7 +9,7 @@ export __tag=IptWr
 export __daemon=-d
 
 function usage() {
-    echo "Usage: $0 -c <config_file> -P <pid_file> -i <ip> -p <port> -t <tag> -F (foreground mode) -h (help and exit)"
+    echo "Usage: $(basename $0) -c <config_file> -P <pid_file> -i <ip> -p <port> -t <tag> -F (foreground mode) -h (help and exit)"
 }
 
 while getopts 'c:P:i:p:t:Fh' __flag; do
