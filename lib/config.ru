@@ -1,4 +1,3 @@
-require 'bundler'
 require 'eventmachine'
 require 'fileutils'
 require 'json'
@@ -112,8 +111,6 @@ if $?.exitstatus == 1
   command_append_post_nat_jump_rule = IpWrangler::Command.append_rule('POSTROUTING', 'nat', [IpWrangler::Parameter.jump("#{config['iptables_chain_name']}_POST")])
   IpWrangler::Exec.execute_iptables_command(command_append_post_nat_jump_rule)
 end
-
-Bundler.require
 
 require File.dirname(__FILE__) + '/ip_wrangler/main.rb'
 
