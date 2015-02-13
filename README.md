@@ -90,7 +90,9 @@ To clean rules created by `ipwrangler` in `iptables`:
 
     ip-wrangler-clean <iptables_chain_name|maybe:IPT_WR>
 
-You can use *init.d* scripts to start and stop *migratio* automatic. Plase check [`initd.md`](support/initd.md). Be aware that service will run as `root`. You can change it by modifing [script](support/initd/ip-wrangler).
+You can use *init.d* scripts to start and stop *migratio* automatic.
+Plase check [`initd.md`](support/initd.md). Be aware that service will
+run as `root`. You can change it by modifing [script](support/initd/ip-wrangler).
 
 ### Log'n'roll
 
