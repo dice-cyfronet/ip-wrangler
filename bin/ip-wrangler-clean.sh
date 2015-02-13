@@ -2,6 +2,8 @@
 
 # It removes iptables rules, created by Ip-Wrangler, which are NAT to nowhere.
 
+echo "NO WARRANTY. YOU ARE USING THIS ON YOUR OWN RISK!"
+
 command -v curl > /dev/null 2>&1 || { echo "No 'curl'" >&2; exit 1; }
 command -v nmap > /dev/null 2>&1 || { echo "No 'nmap'" >&2; exit 1; }
 
@@ -37,6 +39,9 @@ if [ -z "${nova_list_path}" ] || [ -z "${user}" ] || [ -z "${password}" ] || [ -
 then
     usage
 fi
+
+echo "You can interrupt it now by (ctrl)+(c).."
+read
 
 nova_list=$(cat ${nova_list_path})
 for ppp in $(for pp in $(curl -u ${user}:${password} ${url}/dnat | sed 's/\",\"/ /g' | sed 's/\[\"//g' | sed 's/\"\]//g')
