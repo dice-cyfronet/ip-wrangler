@@ -45,6 +45,8 @@ Install `ruby` and `bundler` (as root, **optional**):
     popd
     popd
 
+> **Note!** You can use *rbenv* or *rvm* if you don't want to install ruby globally.
+
 Install this software:
 
     gem install ip-wrangler
@@ -88,7 +90,7 @@ To clean rules created by `ipwrangler` in `iptables`:
 
     ip-wrangler-clean <iptables_chain_name|maybe:IPT_WR>
 
-You can use *init.d* scripts to start and stop *migratio* automatic. Check [`initd.md`](support/initd.md)
+You can use *init.d* scripts to start and stop *migratio* automatic. Plase check [`initd.md`](support/initd.md). Be aware that service will run as `root`. You can change it by modifing [script](support/initd/ip-wrangler).
 
 ### Log'n'roll
 
