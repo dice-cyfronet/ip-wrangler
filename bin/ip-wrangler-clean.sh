@@ -2,6 +2,9 @@
 
 # It removes iptables rules, created by Ip-Wrangler, which are NAT to nowhere.
 
+command -v curl > /dev/null 2>&1 || { echo "No 'curl'" >&2; exit 1; }
+command -v nmap > /dev/null 2>&1 || { echo "No 'nmap'" >&2; exit 1; }
+
 usage() { echo "Usage: $(basename $0) -n(ova_list) <path/to/file/with/nova_list.dump> -U(ser IpWrangler) <user> -P(assword IpWrangler) <password> -u(rl IpWrangler) <URL|maybe:http://127.0.0.1:8400> -p(refix) <IpPrefix|maybe:192.168.0>" 1>&2; exit 0; }
 
 while getopts ":n:U:P:u:p:" __opts; do
