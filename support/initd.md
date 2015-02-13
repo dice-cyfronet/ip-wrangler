@@ -20,3 +20,5 @@ Set values to:
 * database file: `/etc/ip-wrangler/ip-wrangler.db`
 
 Update your `initd` configuration to enable start and stop service. `ip-wrangler` will started by `root`.
+
+Remeber about *logrotate* settings. Please check section [Log'n'roll](https://github.com/dice-cyfronet/ip-wrangler#lognroll).
