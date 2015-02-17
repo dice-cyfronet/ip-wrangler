@@ -177,6 +177,10 @@ Deleting:
 * `DELETE /dnat/<private_ip>/<private_port>` - delete NAT port for specified IP
 * `DELETE /dnat/<private_ip>` - delete any NAT port for specified IP
 
+## Flow
+
+More information in [docs](DOCS.md).
+
 ## Contributing
 
 1. Fork it!
