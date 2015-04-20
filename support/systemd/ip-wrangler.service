@@ -1,0 +1,18 @@
+[Unit]
+Description=IP-Wrangler Service
+
+[Service]
+Type=forking
+User=ip-wrangler
+Group=ip-wrangler
+PermissionsStartOnly=true
+Environment="GEM_PATH=/usr/share/gems"
+ExecStartPre=/usr/bin/mkdir -p /var/run/ip-wrangler
+ExecStartPre=/usr/bin/chown -R ip-wrangler:ip-wrangler /var/run/ip-wrangler
+ExecStart=/usr/bin/ip-wrangler-start -c /etc/ip-wrangler.yml -P /var/run/ip-wrangler/ip-wrangler.pid
+ExecStop=/usr/bin/ip-wrangler-stop -P /var/run/ip-wrangler/ip-wrangler.pid
+PIDFile=/var/run/ip-wrangler/ip-wrangler.pid
+
+[Install]
+WantedBy=multi-user.target
+
